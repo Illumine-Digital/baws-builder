@@ -1,0 +1,111 @@
+- name: include vagrant vars
+  include_vars: vagrant.yml
+  tags:
+   - vagrant
+
+- stat: path=/usr/bin/drush
+  register: drush
+  tags:
+   - drush
+   - dev
+   - burris_builder
+   - drupal7
+
+- name: install drush
+  get_url: url=https://github.com/drush-ops/drush/releases/download/8.1.16/drush.phar dest=/usr/bin/drush mode=ugo+x
+  notify:
+   - initial drush run
+  when: not drush.stat.exists
+  tags:
+   - drush
+
+- name: alter var permissions
+  file:
+    path: /var/www
+    mode: 0775
+    owner: ec2-user
+    group: burrisx
+    recurse: yes
+  tags:
+    - live
+    - dev
+
+
+- name: create settings directory for drupal 8
+  file:
+    path: "{{ site_root }}/{{site_name}}/sites/default/"
+    state: directory
+    mode: 0775
+    owner: ec2-user
+    group: burrisx
+  tags:
+  - drupal7
+
+- name: setting drupal settings according to import
+  template: src=drupal.settings.j2 dest={{ site_root }}/{{site_name}}/sites/default/settings.php
+  vars:
+   drupal_db_name: "{{mysql_db}}"
+   drupal_db_user: "{{mysql_user}}"
+   drupal_db_pass: "{{mysql_pass}}"
+   drupal_db_host: "{{db_host}}"
+  tags:
+   - local_db_import
+   - drupal7
+
+- name: create settings directory for drupal 8
+  file:
+    path: "{{ site_root }}/{{site_name}}/web/sites/default/"
+    state: directory
+    mode: 0775
+    owner: ec2-user
+    group: burrisx
+  tags:
+    - drupal8
+
+- name: create drupal 8 settings
+  template: src=drupal8.settings.j2 dest={{ site_root }}/{{site_name}}/web/sites/default/settings.php
+  vars:
+   drupal_db_name: "{{db_name}}"
+   drupal_db_user: "{{db_user}}"
+   drupal_db_pass: "{{db_pass}}"
+   drupal_db_host: "{{db_host}}"
+  tags:
+   - local_db_import
+   - drupal8
+
+- name: composer install
+  become_user: "{{ssh_user}}"
+  shell: composer install --no-interaction --prefer-dist
+  args:
+    chdir: "/var/www/html/{{site_name}}"
+    creates: "/var/www/html/{{site_name}}/vendor"
+  tags:
+   - composer_install
+
+- name: set drupal 7 files location
+  set_fact:
+    drupal_files: "{{server_root}}/sites/default/files"
+  tags:
+  - drupal7
+  - drupal8
+
+
+- block:
+
+  - name: create drupal private directory
+    file: path=/var/www/drupal_private state=directory mode=0777
+
+  - name: adjust mount directory
+    file: path=/mnt mode=0777
+
+  - name: create website efs root
+    file: path={{efs_mount}}/{{site_name}} state=directory mode=0777
+
+  - name: symlink files folder
+    file:
+      src: "{{efs_mount}}/{{site_name}}"
+      dest: "{{drupal_files}}"
+      state: link
+  when: drupal_files is defined
+  tags:
+  - efs

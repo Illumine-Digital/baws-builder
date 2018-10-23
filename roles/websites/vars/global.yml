@@ -1,0 +1,3 @@
+nginx_includes:
+ - apps/global/cache-live.conf
+ - apps/global/php-live.conf

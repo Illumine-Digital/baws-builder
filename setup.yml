@@ -1,0 +1,51 @@
+- block:
+
+  - name: update all yum packages
+    yum:
+      name: "*"
+      state: latest
+
+  - name: get vars
+    include_vars: "{{ansible_os_family}}.yml"
+
+  - name: install basic packages
+    yum: name={{ item }} state=installed
+    with_items:
+    - gcc
+    - gcc-c++
+    - python2-pip
+    - ruby
+
+#todo. Pip complains about being root when this is installed, but the user flag is convoluted.
+  # Figure out how to make everyone happy.
+
+  - name: install boto
+    command: /bin/pip install --user boto
+
+  - name: install boto3
+    command: /bin/pip install boto3
+
+
+
+  - name: install yum cron
+    yum: name=yum-cron state=installed
+    register: yumcron
+
+  - name: sed yum cron
+    lineinfile:
+     dest: /etc/yum/yum-cron.conf
+     state: present
+     regexp: '^apply_updates'
+     line: 'apply_updates = yes'
+    when: yumcron.changed
+
+  - name: sed yum security
+    lineinfile:
+     dest: /etc/yum/yum-cron.conf
+     state: present
+     regexp: '^update_cmd '
+     line: 'update_cmd = security'
+    when: yumcron.changed
+
+  tags:
+   - always

@@ -1,0 +1,10 @@
+- name: send slack notification
+  slack:
+    token: "{{slack_token}}"
+    msg: "
+    Instance has completed
+    https://{{ansible_ec2_placement_region}}.console.aws.amazon.com/ec2/v2/home?region={{ansible_ec2_placement_region}}#Instances:search={{ansible_ec2_instance_id}};sort=availabilityZone\" {{ansible_ec2_instance_id}}
+    Public DNS: {{ansible_ec2_public_hostname}}"
+  when: slack_token != 'none' and ansible_ec2_public_hostname is defined
+  tags:
+   - always

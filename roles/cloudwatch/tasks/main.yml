@@ -1,0 +1,29 @@
+- block:
+
+  - name: register aws monitor
+    stat: path=/opt/aws-scripts-mon
+    register: awsmonitor
+
+  - name: install monitoring script prerequisite
+    yum: name={{item}} state=present
+    with_items:
+     - perl-Switch
+     - perl-DateTime
+     - perl-Sys-Syslog
+     - perl-LWP-Protocol-https
+
+  - name: get and unzip cloudwatch scripts
+    unarchive:
+      src: http://aws-cloudwatch.s3.amazonaws.com/downloads/CloudWatchMonitoringScripts-1.2.1.zip
+      dest: /opt
+      remote_src: yes
+    when: not awsmonitor.stat.exists
+    register: getmonitor
+
+
+  - name: create aws monitoring cron
+    cron:
+      job: /opt/aws-scripts-mon/mon-put-instance-data.pl --from-cron --auto-scaling=only --mem-util --mem-used --mem-avail --swap-util --swap-used --disk-space-util --disk-space-used --disk-space-avail --memory-units=megabytes --disk-space-units=gigabytes --disk-path=/dev/xvda1
+
+  tags:
+   - cloudwatch

@@ -1,0 +1,6 @@
+ebs_gb: 20
+ebs_type: gp2
+ebs_name: /dev/sdf
+ses_user: none
+ses_pass: none
+ses_host: email-smtp.{{ansible_ec2_placement_region}}.amazonaws.com

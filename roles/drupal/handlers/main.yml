@@ -1,0 +1,3 @@
+- name: initial drush run
+  become_user: "{{ssh_user}}"
+  shell: drush init -y

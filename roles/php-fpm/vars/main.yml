@@ -1,0 +1,30 @@
+php_fpm_dir: /etc/php-fpm.d
+php_fpm_pool_dir: /etc/php-fpm.d
+php_ini_dir: /etc/php-fpm.d
+php_log_dir: /var/log/php/{{ php_version }}
+php_session_dir: /var/lib/php/{{ php_version }}
+
+pool_dev_name: www-dev
+pool_stage_name: www-stage
+pool_live_name: www-live
+pool_bb_name: burrisx
+
+php_dev_port: 9003
+php_stage_port: 9002
+php_live_port: 9001
+php_bb_port: 9010
+
+php_dev_addr: 127.0.0.1
+php_stage_addr: 127.0.0.1
+php_live_addr: 127.0.0.1
+php_bb_addr: 127.0.0.1
+
+php_dev_memory: 384M
+php_stage_memory: 384M
+php_live_memory: 384M
+php_bb_memory: 384M
+
+php_dev_errors: on
+php_stage_errors: on
+php_live_errors: off
+php_bb_errors: off

@@ -1,0 +1,33 @@
+- name: install wp cli
+  get_url:
+   url: https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+   dest: /usr/local/bin/wp
+   mode: a+x
+  tags:
+   - wpcli
+   - utils
+
+- name: set wordpress config file
+  template: src=wp-config.j2.php dest={{website_dir}}/wp-config.php mode=644
+  tags:
+   - wp
+
+- block:
+
+  - name: adjust mount directory
+    file: path=/mnt mode=0777
+
+  - name: create mount folder
+    file: path={{efs_folder}}/uploads mode=0777 state=directory
+
+  - name: create content child folder
+    file: path={{website_dir}}/{{wp_content}} mode=0775 state=directory
+
+  - name: symlink files folder
+    file:
+      src: "{{efs_folder}}/uploads"
+      dest: "{{website_dir}}/{{wp_content}}/uploads"
+      state: link
+  tags:
+   - wp
+  when: efs_id is defined

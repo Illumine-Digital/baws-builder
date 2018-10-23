@@ -1,0 +1,48 @@
+---
+
+- block:
+  - name: stat apache git repo
+    stat: path=/etc/httpd/.git
+    register: apache_repo
+
+  - name: clear apache directory
+    file: path=/etc/httpd state=absent
+    when: not apache_repo.stat.exists
+
+  - name: clone apache config
+    git:
+      repo: https://github.com/wwwpro/httpd.git
+      dest: /etc/httpd
+    when: not apache_repo.stat.exists
+
+  tags:
+   - webdav
+   - apache
+
+- name: check for bb apache config
+  stat: path=/etc/httpd/.git
+  register: apache_default
+  tags:
+   - default
+   - builder_dev
+
+- name: symlinking default webdav
+  file:
+    src: /etc/httpd/sites-enabled/default-dav.conf
+    dest: /etc/httpd/sites-available/default-dav.conf
+    state: link
+  when: apache_default.stat.exists
+  tags:
+   - default
+
+- name: symlinking default webdav
+  file:
+    src: /etc/httpd/sites-enabled/burris_builder-dav.conf
+    dest: /etc/httpd/sites-available/burris_builder-dav.conf
+    state: link
+  when: apache_default.stat.exists
+  tags:
+   - builder_dev
+
+
+...

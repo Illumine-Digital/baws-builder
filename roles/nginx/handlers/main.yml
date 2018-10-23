@@ -1,0 +1,64 @@
+- name: enable nginx boot
+  service: name=nginx enabled=yes state=started
+
+- name: symlink pma
+  file:
+   src: /etc/nginx/sites-available/pma.conf
+   dest: /etc/nginx/sites-enabled/pma.conf
+   state: link
+
+- name: enable site
+  file: src={{site_available}}/{{site_name}}.conf dest={{site_enabled}}/{{site_name}}.conf state=link
+
+- name: symlink default site
+  file:
+    src: /etc/nginx/sites-available/default.conf
+    dest: /etc/nginx/sites-enabled/default.conf
+    state: link
+  ignore_errors: true
+
+- name: remove unsupported aio
+  replace:
+    dest: "{{item}}"
+    regexp: '^\s*[#]?aio'
+    replace: "#aio on; #turn off aio for ubuntu"
+  with_items:
+   - /etc/nginx/apps/drupal/drupal.conf
+   - /etc/nginx/apps/drupal/drupal_boost.conf
+   - /etc/nginx/apps/drupal/drupal_boost_escaped.conf
+   - /etc/nginx/apps/drupal/drupal_burris.conf
+   - /etc/nginx/apps/drupal/drupal_dev.conf
+   - /etc/nginx/apps/drupal/drupal_live.conf
+   - /etc/nginx/apps/drupal/drupal_stage.conf
+
+- name: restart nginx
+  service: name=nginx state=restarted
+
+- name: update nginx real ip 4
+  lineinfile:
+    dest: "/etc/nginx/sites-available/{{site_name}}.conf"
+    state: present
+    line: "{{ item.line }}"
+  with_items:
+    - { line: set_real_ip_from  10.0.0.0/8; }
+    - { line: set_real_ip_from 172.0.0.0/8; }
+    - { line: set_real_ip 52.84.0.0/15; }
+    - { line: set_real_ip 54.182.0.0/16; }
+    - { line: set_real_ip 54.192.0.0/16; }
+    - { line: set_real_ip 54.230.0.0/16; }
+    - { line: set_real_ip 54.239.128.0/18; }
+    - { line: set_real_ip 54.239.192.0/19; }
+    - { line: set_real_ip 54.240.128.0/18; }
+    - { line: set_real_ip 204.246.164.0/22; }
+    - { line: set_real_ip 204.246.168.0/22; }
+    - { line: set_real_ip 204.246.174.0/23; }
+    - { line: set_real_ip 204.246.176.0/20; }
+    - { line: set_real_ip 205.251.192.0/19; }
+    - { line: set_real_ip 205.251.249.0/24; }
+    - { line: set_real_ip 205.251.250.0/23; }
+    - { line: set_real_ip 205.251.252.0/23; }
+    - { line: set_real_ip 205.251.254.0/24; }
+    - { line: set_real_ip 216.137.32.0/19; }
+  tags:
+  - cloudfront
+  - elb

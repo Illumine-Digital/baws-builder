@@ -1,0 +1,11 @@
+set mailserver email-smtp.us-west-2.amazonaws.com port 587 username "{{ses_user}}" password
+"{{ses_pass}}" using TLSV1 with timeout 30 seconds using hostname {{ses_hostname}}
+
+set mail-format {
+      from: {{monit_email}}
+  reply-to: {{monit_email}}
+   subject: $SERVICE $EVENT at $DATE
+   message: Monit $ACTION $SERVICE at $DATE on $HOST: $DESCRIPTION.
+            Yours truly,
+            monit
+ }

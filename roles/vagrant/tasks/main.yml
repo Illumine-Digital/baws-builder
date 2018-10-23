@@ -1,0 +1,15 @@
+- block:
+
+  - name: create server root directory
+    file:
+      path: "/var/www/html/{{site_name}}"
+      state: directory
+      mode: 0775
+  tags:
+   - vagrant
+
+#Drupal 8 optimized sync operation
+- name: sync vagrant to web directory
+  command: /usr/bin/rsync -r --exclude="*.sql.gz" --exclude="*.idea" --exclude="*node_modules*" --exclude="vendor*" --exclude="web/modules/contrib*" --exclude="web/themes/contrib*" --exclude="web/core*" --exclude="bin*"  {{vagrant_src}} /var/www/html/{{site_name}}
+  tags:
+    - sync

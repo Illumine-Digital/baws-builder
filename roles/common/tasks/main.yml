@@ -1,0 +1,82 @@
+- name: gather ec2 metadata facts
+  action: ec2_metadata_facts
+  ignore_errors: yes
+  tags:
+   - always
+
+- name: set ssh user
+  set_fact:
+    ssh_user: vagrant
+  tags:
+    - vagrant
+
+
+- name: get public key
+  authorized_key: user={{ssh_user}} key={{public_key_url}}
+  when: public_key_url is defined
+  tags:
+   - always
+
+#@todo Causes syntax errors. Why?
+#- name: set timezone
+#  timezone: name=America/Los_Angeles
+#  tags:
+#   - always
+
+
+
+- name: install epel
+  yum:
+    name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    state: present
+  tags:
+  - always
+
+#Includes htpasswd, which other services may use, even without apache.
+- name: install apache tools
+  yum:
+    name: httpd-tools
+    state: installed
+  tags:
+  - live
+  - dev
+  - webtools
+
+#Install password resources
+# This is used for password protect dev sites, for instance, where the password prompt is delivered by the web server.
+- block:
+
+  - name: install pip3
+    yum:
+      name: python3-pip
+      state: present
+
+  - name: install python passlib
+    pip: name=passlib state=present
+
+  - name: create auth directory
+    file: path=/var/www/auth state=directory
+
+  - name: create resources file
+    htpasswd: name={{user_name}} password={{user_pass}} path=/var/www/auth/.resources
+
+  - name: create dbm file
+    shell: htdbm -cb /var/www/auth/.dbm "{{user_name}}" "{{user_pass}}"
+    args:
+      creates: /var/www/auth/.dbm
+
+  - name: create root cnf
+    template: src=resources.j2 dest=/root/.resources mode=0600
+
+  tags:
+    - pass
+
+- name: create website root
+  file:
+   path: "{{website_dir}}"
+   state: directory
+   mode: 0664
+  tags:
+   - dev
+   - live
+

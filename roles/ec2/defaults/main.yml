@@ -1,0 +1,9 @@
+ebs_gb: 20
+ebs_type: gp2
+ebs_name: /dev/sdf
+ebs_mount_point: /www
+codedeploy_tag: web
+efs_mount: /mnt/efs
+efs_folder: "{{efs_mount}}/{{site_name}}"
+route_zone: none
+route_record: none

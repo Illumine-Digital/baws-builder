@@ -1,0 +1,35 @@
+---
+- block:
+  - stat: path=/usr/local/bin/composer
+    register: composer
+
+  - stat: path=/usr/local/bin/composer-setup.php
+    register: composer_setup
+
+  - name: delete previously failed composer install if applicable
+    file: path=/usr/local/bin/composer-setup.php state=absent
+    when: composer_setup.stat.exists
+
+  - name: get composer
+    get_url:
+     url: https://getcomposer.org/installer
+     dest: /usr/local/bin/composer-setup.php
+     owner: "{{ssh_user}}"
+     group: burrisx
+    when: not composer.stat.exists
+    notify:
+     - install composer
+     - activate composer
+     - create composer alias
+     - create composer swap
+     - composer cleanup
+  tags:
+     - dev
+     - live
+     - composer
+     - burris_builder
+     - pma
+
+#Other installers depend on complete installation.
+- meta: flush_handlers
+...

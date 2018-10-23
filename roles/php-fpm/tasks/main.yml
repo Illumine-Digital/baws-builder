@@ -1,0 +1,253 @@
+---
+
+- name: install core php
+  command: /usr/bin/amazon-linux-extras install php7.2=latest -y
+  args:
+    creates: /etc/php.ini
+  tags:
+  - dev
+  - live
+
+- name: install imagick
+  yum:
+    name: ImageMagick-devel
+    state: present
+  tags:
+  - dev
+  - live
+
+# These libraries don't designate PHP 7.2 in the repo, but seem to install and work just fine.
+- name: install php packages
+  yum: name={{ item }} state=installed
+  with_items:
+  - php-xml
+  - php-gd
+  - php-mbstring
+  - php-pear
+  - php-opcache
+  - php-devel
+  - php-bcmath
+  tags:
+  - dev
+  - live
+  - php
+  register: php
+
+- name: install php-fpm
+  yum: name=php-fpm state=installed
+  notify:
+  - restart php-fpm
+  - enable php-fpm
+  - monitor php-fpm
+  tags:
+  - dev
+  - live
+  - php-fpm
+
+- block:
+
+  - name: set pecl 7 vars
+    command: /usr/bin/pecl config-set php_ini /etc/php.ini
+
+  - name: set pear 7 vars
+    command: /usr/bin/pear config-set php_ini /etc/php.ini
+
+  - name: install imagick
+    command: /usr/bin/pecl install imagick
+
+  - name: install redis
+    command: /usr/bin/pecl install redis
+
+  when: php.changed
+  tags:
+  - dev
+  - live
+
+# Pool settings for Drupal 8
+- block:
+
+  - name: set max accelerated files
+    lineinfile:
+      dest: /etc/php.d/10-opcache.ini
+      regexp: '^opcache.max_accelerated_files'
+      line: 'opcache.max_accelerated_files=20000'
+      state: present
+  - name: set string buffer
+    lineinfile:
+      dest: /etc/php.d/10-opcache.ini
+      regexp: '^oopcache.interned_strings_buffer'
+      line: 'opcache.interned_strings_buffer=16'
+      state: present
+
+  - name: set opcache memory
+    lineinfile:
+      dest: /etc/php.d/10-opcache.ini
+      regexp: '^opcache.memory_consumption'
+      line: 'opcache.memory_consumption=256'
+      state: present
+  tags:
+  - drupal8
+
+
+
+#INI Things
+- block:
+
+  #This is primarily for php cli (composer) since pools contain their own memory setting.
+  - name: set php memory limit
+    lineinfile:
+      dest: /etc/php.ini
+      regexp: '^memory_limit'
+      line: 'memory_limit = 512M'
+      state: present
+
+  - name: set upload limit
+    lineinfile:
+      dest: /etc/php.ini
+      regexp: '^upload_max_filesize'
+      line: 'upload_max_filesize = {{ upload_max }}'
+      state: present
+
+  - name: set upload limit
+    lineinfile:
+      dest: /etc/php.ini
+      regexp: '^post_max_size'
+      line: 'post_max_size  = {{ post_max  }}'
+      state: present
+
+  tags:
+  - dev
+  - live
+
+
+
+#Create composer ini before xdebug is installed
+- name: create composer ini
+  copy: src=/etc/php.ini dest=/etc/php-composer.ini
+  when: php.changed
+  tags:
+  - dev
+
+
+- block:
+
+  - name: install php devel
+    yum:
+      name: php-devel
+      state: present
+
+  - name: stat xdebug
+    stat: path=/usr/lib64/php/modules/xdebug.so
+    register: xdebug
+
+  - name: install xdebug
+    command: /usr/bin/pecl install xdebug
+    when: not xdebug.stat.exists
+    register: xdebug_install
+
+  - name: chmod xdebug
+    file: path=/usr/lib64/php/modules/xdebug.so mode=o+x
+    when: xdebug_install.changed
+
+  tags:
+  - dev
+  - xdebug
+
+
+- name: include vagrant vars
+  include_vars: file=vagrant.yml
+  tags:
+   - vagrant
+
+- name: setup log directory
+  file: path={{ php_log_dir }} state=directory
+  tags:
+   - dev
+   - live
+
+- name: setup dev session directories
+  file: path={{ php_session_dir }}/{{ item }} state=directory owner={{nginx_user}} group=nginx mode=0770
+  with_items:
+   - session-dev
+   - session-stage
+   - session-live
+  tags:
+   - dev
+
+- name: setup live session directories
+  file: path={{ php_session_dir }}/session-live state=directory owner=nginx group=nginx mode=0770
+  tags:
+   - live
+
+- name: setup burris builder session directory
+  file: path={{ php_session_dir }}/session-burrisx state=directory owner=nginx group=nginx mode=0770
+  tags:
+   - burris_builder
+
+
+#Setup Pools
+- name: setup dev pool
+  template: src=www.conf.j2 dest={{php_fpm_pool_dir}}/www-dev.conf
+  vars:
+    pool_name: "{{ pool_dev_name }}"
+    pool_user: "{{ nginx_user }}"
+    pool_group: "{{ nginx_group }}"
+    php_port: "{{ php_dev_port }}"
+    php_addr: "{{ php_dev_addr }}"
+    php_memory: "{{ php_dev_memory }}"
+    php_errors: "{{ php_dev_errors }}"
+    php_session: "{{ php_session_dir }}/session-dev"
+    php_log: "{{ php_log_dir }}/wwwdev-error.log"
+  tags:
+  - dev
+
+- name: setup stage pool
+  template: src=www.conf.j2 dest={{php_fpm_pool_dir}}/www-stage.conf
+  vars:
+    pool_name: "{{ pool_stage_name }}"
+    pool_user: "{{ nginx_user }}"
+    pool_group: "{{ nginx_group }}"
+    php_port: "{{ php_stage_port }}"
+    php_addr: "{{ php_stage_addr }}"
+    php_memory: "{{ php_stage_memory }}"
+    php_errors: "{{ php_stage_errors }}"
+    php_session: "{{ php_session_dir }}/session-stage"
+    php_log: "{{ php_log_dir }}/wwwstage-error.log"
+  tags:
+  - dev
+
+- name: setup live pool
+  template: src=www.conf.j2 dest={{php_fpm_pool_dir}}/www.conf
+  vars:
+    pool_name: "{{ pool_live_name }}"
+    pool_user: "{{ nginx_user }}"
+    pool_group: "{{ nginx_group }}"
+    php_port: "{{ php_live_port }}"
+    php_addr: "{{ php_live_addr }}"
+    php_memory: "{{ php_live_memory }}"
+    php_errors: "{{ php_live_errors }}"
+    php_session: "{{ php_session_dir }}/session-live"
+    php_log: "{{ php_log_dir }}/error.log"
+  tags:
+  - dev
+  - live
+
+- name: setup burrisx pool
+  template: src=www.conf.j2 dest={{php_fpm_pool_dir}}/burrisx.conf
+  vars:
+    pool_name: "{{ pool_bb_name }}"
+    pool_user: burrisx
+    pool_group: burrisx
+    php_port: "{{ php_bb_port }}"
+    php_addr: "{{ php_bb_addr }}"
+    php_memory: "{{ php_bb_memory }}"
+    php_errors: "{{ php_bb_errors }}"
+    php_session: "{{ php_session_dir }}/session-burrisx"
+    php_log: "{{ php_log_dir }}/wwwburrisx-error.log"
+  tags:
+  - burris_builder
+
+
+
+
+...

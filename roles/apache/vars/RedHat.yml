@@ -1,0 +1,2 @@
+apache_dir: /etc/httpd
+apach_log_dir: /var/log/httpd

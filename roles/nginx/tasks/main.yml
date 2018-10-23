@@ -1,0 +1,190 @@
+---
+
+
+- name: switch pool to dev
+  set_fact:
+    pool: phpdev
+  tags:
+   - dev
+
+- name: stat nginx git repo before
+  stat: path=/etc/nginx/.git
+  register: nginx_repo
+  tags:
+   - dev
+   - live
+   - default
+
+
+- name: install nginx extra
+  command: /usr/bin/amazon-linux-extras install nginx1.12=latest -y
+  args:
+    creates: /etc/nginx/nginx.conf
+  notify:
+  - enable nginx boot
+  - monitor nginx
+  - restart nginx
+  tags:
+  - dev
+  - live
+
+#General nginx install
+- block:
+
+  - name: nginx config
+    file: path=/etc/nginx state=absent
+    when: not nginx_repo.stat.exists
+
+  - name: clone nginx config
+    git:
+      repo: https://github.com/wwwpro/nginx.git
+      dest: /etc/nginx
+    when: not nginx_repo.stat.exists
+
+  - name: create nginx ssl directory
+    file: path=/etc/nginx/ssl state=directory
+
+  - name: create nginx self signed certificate
+    shell: openssl req -new -nodes -x509 -subj "/C=../ST=../L=../O=../CN=localhost" -days 3650 -keyout /etc/nginx/ssl/nginx.key -out /etc/nginx/ssl/nginx.crt -extensions v3_ca
+    args:
+      creates: "{{ssl_dir}}/nginx.crt"
+
+  - name: create microcache directory
+    file: path=/var/cache/nginx/microcache state=directory
+
+  tags:
+   - dev
+   - live
+
+
+- name: stat nginx git repo before
+  stat: path=/etc/nginx/.git
+  register: nginx_post
+  tags:
+   - live
+   - dev
+   - status
+   - default_site
+
+- name: change nginx variable for D8
+  set_fact:
+    server_root: "{{website_dir}}/web"
+  tags:
+   - drupal8
+
+- name: set drupal to dev
+  set_fact:
+    level: "dev"
+    drupal_level: "drupal_dev"
+  tags:
+   - dev
+
+- name: set level to dev
+  set_fact:
+    level: "dev"
+    drupal_level: "drupal"
+  tags:
+   - stage
+
+- name: set level to stage
+  set_fact:
+    level: "live"
+    pool: "phpcgi"
+  tags:
+   - live
+
+- name: create drupal nginx conf
+  template: src=default_secure.j2.conf dest={{site_available}}/{{site_name}}.conf
+  vars:
+    pool: phpcgi
+    nginx_includes:
+     - apps/drupal/drupal_{{level}}.conf
+     - apps/drupal/drupal_cron_update.conf
+     - apps/drupal/drupal_install.conf
+  notify:
+   - restart nginx
+   - enable site
+  tags:
+   - drupal7
+   - drupal8
+
+- name: create wp nginx conf
+  template: src=wp.j2.conf dest={{site_available}}/{{site_name}}.conf
+  vars:
+    pool: "{{pool}}"
+    nginx_includes:
+     - apps/wp/wp-{{level}}.conf
+     - apps/wp/wp_supercache.conf
+  notify:
+   - restart nginx
+   - enable site
+  tags:
+   - wp
+
+#Either status or default can be linked for status.
+#Linking both will cause warnings, but not problems.
+- name: symlink ping
+  file:
+   src: "{{site_available}}/status.conf"
+   dest: "{{site_enabled}}/status.conf"
+   state: link
+  when: nginx_post.stat.exists
+  tags:
+   - status
+   - elb
+
+- name: symlink default
+  file:
+   src: "{{site_available}}/{{site_name}}.conf"
+   dest: "{{site_enabled}}/{{site_name}}.conf"
+   state: link
+  when: nginx_post.stat.exists
+  tags:
+   - dev
+   - live
+
+- name: stat app drive
+  stat: path=/www
+  register: appdrive
+  tags:
+   - dev
+   - appdrive
+   - live
+
+- name: symlink volume
+  file:
+   src: "{{site_available}}/volumes/www.conf"
+   dest: "{{site_enabled}}/www.conf"
+   state: link
+  when: appdrive.stat.exists
+  tags:
+   - appdrive
+
+- name: symlink builder
+  file:
+   src: "{{site_available}}/burris_builder.conf"
+   dest: "{{site_enabled}}/burris_builder.conf"
+   state: link
+  tags:
+   - burris_builder
+
+- name: symlink opcache
+  file:
+   src: "{{site_available}}/opcache.conf"
+   dest: "{{site_enabled}}/opcache.conf"
+   state: link
+  tags:
+   - dev
+   - opcache
+
+
+- name: setup nginx for vagrant
+  lineinfile:
+    dest: /etc/nginx/nginx.conf
+    state: present
+    regexp: '^user'
+    line: 'user vagrant;'
+  tags:
+   - vagrant
+
+...

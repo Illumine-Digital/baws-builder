@@ -1,0 +1,2 @@
+pma_upload: /var/www/pmadump
+pma_save: /var/www/pmasave

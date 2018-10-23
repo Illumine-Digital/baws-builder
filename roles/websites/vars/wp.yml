@@ -1,0 +1,3 @@
+nginx_includes:
+ - apps/wp/wp-live.conf
+ - apps/wp/wp_supercache.conf

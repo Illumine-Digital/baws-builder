@@ -1,0 +1,27 @@
+---
+- block:
+
+  - name: install aws logs
+    yum: name=awslogs state=present
+    notify:
+     - enable awslogs boot
+     - restart awslogs
+
+  - name: create aws logs conf
+    copy: src=awslogs.conf dest=/etc/awslogs/awslogs.conf
+
+  - name: switch aws region
+    lineinfile:
+      dest: /etc/awslogs/awslogs.conf
+      state: present
+      regexp: '^region'
+      line: "region = {{ansible_ec2_placement_region}}"
+    notify:
+    - restart awslogs
+
+
+  when: "'amazon' in ansible_product_version"
+  tags:
+   - live
+   - awslogs
+...

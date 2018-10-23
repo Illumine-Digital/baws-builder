@@ -1,0 +1,83 @@
+<VirtualHost *:81>
+DocumentRoot {{site_root}}/{{site_name}}
+#ServerName *
+
+<Location "/" >
+#Turn on directory listing
+Options +Indexes
+#Make sure php is not being processed before downloading.
+RemoveHandler .php
+#All text files, regardless of extension.
+ForceType text/plain
+#And, of course, turn on webdav
+Dav On
+</Location>
+
+<Directory {{site_root}}/{{site_name}}>
+#Overrides default PHP settings to allow Webdav to show a directroy listing.
+DirectoryIndex disabled
+#Ignore .htaccess files
+AllowOverride none
+
+allow from all
+#Digest is needed for Windows
+AuthType Digest
+AuthName WebDav
+AuthUserFile {{auth_dir}}/.dav-digest
+Require valid-user
+</Directory>
+
+SSLEngine off
+
+CustomLog     {{apach_log_dir}}/{{site_name}}-access.log combined Env=!DontLog
+ ErrorLog      {{apache_log_dir}}/{{site_name}}-standard-error.log
+ LogLevel crit
+
+</VirtualHost>
+
+
+<VirtualHost *:444>
+DocumentRoot {{site_root}}/{{site_name}}
+#ServerName *
+
+<Location "/" >
+#Turn on directory listing
+Options +Indexes
+#Make sure php is not being processed before downloading.
+RemoveHandler .php
+#All text files, regardless of extension.
+ForceType text/plain
+#And, of course, turn on webdav
+Dav On
+</Location>
+
+<Directory {{site_root}}/{{site_name}}>
+#Overrides default PHP settings to allow Webdav to show a directroy listing.
+DirectoryIndex disabled
+#Ignore .htaccess files
+AllowOverride none
+
+allow from all
+#Basic for all others, like Macs, because they don't go all wacky when presented with a selfie (cerftificate)
+AuthType Basic
+AuthName WebDav
+AuthBasicProvider dbm
+AuthDBMUserFile {{auth_dir}}/.dbm
+Require valid-user
+</Directory>
+
+
+SSLEngine on
+
+#Speed optimized SSL settings.
+SSLCipherSuite RC4-SHA:AES128-SHA:HIGH:MEDIUM:!aNULL:!MD5
+SSLHonorCipherOrder on
+
+SSLCertificateFile {{ssl_crt}}
+SSLCertificateKeyFile {{ssl_key}}
+
+CustomLog     {{apache_log_dir}}/{{site_name}}-secure-access.log combined Env=!DontLog
+ ErrorLog      {{apache_log_dir}}/{{site_name}}-secure-error.log
+ LogLevel crit
+
+</VirtualHost>

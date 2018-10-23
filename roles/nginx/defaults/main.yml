@@ -1,0 +1,65 @@
+site_available: /etc/nginx/sites-available
+site_enabled: /etc/nginx/sites-enabled
+site_log: /var/log/nginx
+site_log_level: crit
+
+#Array of domain names to respond to
+server_domains: []
+
+drupal_files: "{{server_root}}/sites/default/files"
+
+drupal_level: drupal
+level: dev
+
+ssl_dir: /etc/nginx/ssl
+
+log_level: crit
+
+ssl_dest: /etc/nginx/ssl
+
+ssl_certificate: nginx.crt
+ssl_key: nginx.key
+
+
+site_domain: _
+
+#Other domains the
+site_domains: []
+# - dev.example.com
+# - cdn.example.com
+
+primary_domain: "www.{{site_domain}}"
+
+nginx_redirect: true
+#Redirect extraneous domains back to the original domain.
+nginx_redirects:
+- "*.{{site_domain}}"
+- "{{site_domain}}"
+
+server_root: "/var/www/html/{{site_name}}"
+
+pool: phpcgi
+
+s3_bucket: none
+s3_dir: keys/ssl
+
+s3_region: us-west-2
+
+s3_keys: none
+
+auth_dir: /var/www/auth
+
+nginx_dest: /var/www/html
+nginx_ssl: off
+nginx_log: /var/log/nginx
+nginx_enabled: /etc/nginx/sites-enabled
+nginx_available: /etc/nginx/sites-available
+
+nginx_secure_redirect: true
+
+nginx_ssl_dir: /etc/nginx/ssl
+ssl_cert: nginx.crt
+
+nginx_includes:
+ - apps/global/cache-live.conf
+ - apps/global/php-live.conf

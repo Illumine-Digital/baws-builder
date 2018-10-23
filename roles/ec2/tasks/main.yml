@@ -1,0 +1,87 @@
+#Mount EFS, not to be confused with EBS.
+
+- block:
+  - name: connect efs drive
+    yum: name=nfs-utils state=present
+
+  - name: create efs mount directory
+    file: path={{efs_mount}} state=directory
+
+  - name: mount efs
+    mount:
+      name: "{{efs_mount}}"
+      src: "{{ansible_ec2_placement_availability_zone}}.{{efs_id}}.efs.{{ansible_ec2_placement_region}}.amazonaws.com:/"
+      fstype: nfs4
+      opts: nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2
+      state: mounted
+
+  when: efs_id is defined
+  tags:
+   - efs
+
+
+- name: provision and attach new web server ebs volume
+  ec2_vol:
+   volume_size: "{{ebs_gb}}"
+   volume_type: "{{ebs_type}}"
+   device_name: "{{ebs_name}}"
+   region: "{{ansible_ec2_placement_region}}"
+   zone: "{{ansible_ec2_placement_availability_zone}}"
+   instance: "{{ansible_ec2_instance_id}}"
+   state: present
+  register: ec2_vol
+  tags:
+   - ebs
+   - appdrive
+
+#Run follow up tasks to ebs attachment. Format, create mount dir and mount.
+- block:
+  - name: format new ebs drive
+    filesystem: fstype=ext4 dev={{ec2_vol.device}}
+
+  - name: create mount directory
+    file: path={{ebs_mount_point}} state=directory
+
+  - name: mount new ebs drive
+    mount: name={{ebs_mount_point}} src={{ec2_vol.device}} fstype=ext4 state=mounted
+
+  when: ec2_vol.changed
+  tags:
+   - ebs
+   - appdrive
+
+
+- name: tag codedeploy server
+  ec2_tag:
+    resource: "{{ansible_ec2_instance_id}}"
+    region: "{{ansible_ec2_placement_region}}"
+    tags:
+      codedeploy: "{{codedeploy_tag}}"
+  tags:
+   - codedeploy
+
+- name: adjust route53 dev record
+  route53:
+    command: create
+    overwrite: yes
+    record: "{{route_record}}"
+    value: "{{ansible_ec2_public_ipv4}}"
+    zone: "{{route_zone}}"
+    type: A
+    ttl: 300
+  ignore_errors: yes
+  tags:
+   - route
+
+#Passwords are disabled by default, which is good. But on local, we choose convenience.
+- name: allow passwords for local machines
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: '^PasswordAuthentication'
+    line: 'PasswordAuthentication yes'
+    state: present
+  notify:
+    - restart sshd
+  tags:
+    - local
+    - vagrant

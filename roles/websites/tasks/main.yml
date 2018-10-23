@@ -1,0 +1,103 @@
+#Install grav
+- block:
+
+  - name: create default html directory
+    file: path=/var/www/html state=directory owner={{ssh_user}} group=nginx
+
+  - name: install grav via composer
+    become_user: "{{ssh_user}}"
+    shell: /usr/bin/php -c /etc/php-composer.ini /usr/local/bin/composer create-project getgrav/grav default  --no-dev  --no-ansi --no-interaction --no-progress
+    notify:
+     - symlink default dav
+     - restart nginx
+    args:
+      creates: /var/www/html/default/index.php
+      chdir: /var/www/html
+
+  - name: default directory nginx ownership
+    file: path=/var/www/html/default owner=nginx group=burrisx recurse=yes state=directory mode=0775
+
+  tags:
+   - grav_new
+
+
+#Install drupal site.
+
+- block:
+
+  - name: include drupal vars
+    include_vars: drupal.yml
+
+  - name: installing minimal drupal 7 site
+    shell: /usr/bin/drush dl drupal-7 --destination=./ --drupal-project-rename=default
+    notify:
+     - create site
+     - enable site
+    args:
+      creates: /var/www/html/{{site_name}}/index.php
+      chdir: /var/www/html
+
+  - name: create default directory
+    file: path={{website_dir}} owner={{ssh_user}} group=burrisx recurse=yes state=directory mode=0775
+
+  tags:
+   - drupal7_new
+
+#Install Drupal 8.
+- block:
+
+  - name: include drupal vars
+    include_vars: drupal.yml
+
+  - name: installing minimal drupal 8 site
+    shell: composer create-project drupal-composer/drupal-project:8.x-dev default --stability dev --no-interaction --prefer-dist
+    notify:
+     - enable site
+    args:
+      creates: /var/www/html/default/web/index.php
+      chdir: /var/www/html
+
+  - name: create default directory
+    file: path={{website_dir}} owner={{ ssh_user }} group=burrisx recurse=yes state=directory mode=0775
+
+  tags:
+   - drupal8_new
+
+#Install WordPress
+- block:
+
+  - name: include wp vars
+    include_vars: wp.yml
+
+  - name: create default directory
+    file: path=/var/www/html/default owner={{ ssh_user }} group=burrisx recurse=yes state=directory mode=0775
+
+  - name: installing minimal wordpress site
+    shell: /usr/local/bin/wp core download
+    become: "{{ssh_user}}"
+    notify:
+     - enable site
+     - restart nginx
+    args:
+      creates: /var/www/html/default/index.php
+      chdir: /var/www/html/default/index.php
+
+  - name: create default directory
+    file: path=/var/www/html/{{site_name}} owner={{ssh_user}} group=burrisx recurse=yes state=directory mode=0775
+
+  tags:
+   - wordpress_new
+
+
+#Install blank site.
+- block:
+
+  - name: create blank site
+    file: path=/var/www/html/{{site_name}} owner=nginx group=burrisx recurse=yes state=directory
+    notify:
+     - symlink default site
+     - symlink default dav
+     - restart nginx
+
+  tags:
+   - blank

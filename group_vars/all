@@ -1,0 +1,46 @@
+host_name: localhost
+
+salt: "{{ lookup('salt', '/tmp/rando chars=ascii_letters length=16') }}"
+
+site_name: default
+site_root: /var/www/html
+
+ssh_user: ec2-user
+
+user_email: admin@localhost.com
+user_pass: "{{ lookup('password', '/tmp/userpass chars=ascii_letters length=16') }}{{ lookup('password', '/tmp/userpass chars=ascii_letters length=16') }}"
+user_name: admin
+
+nginx_user: nginx
+nginx_group: nginx
+
+slack_token: none
+slack_channel: aws
+
+vim_background: dark
+
+#Used to create dbs when MySQL is installed locally
+mysql_db: default
+mysql_user: default
+mysql_pass: "{{ lookup('password', '/tmp/mysql_pass chars=ascii_letters length=16') }}"
+mysql_import_dir: /vagrant
+mysql_import_file: mysql.sql.gz
+
+
+has_memcache: 0
+memcache_host: localhost
+memcache_port: 11211
+memcache_prefix: local_
+
+#Website variables.
+website_dir: "{{site_root}}/{{site_name}}"
+session_host: localhost
+
+#nginx
+ssl_cert: nginx.crt
+ssl_key: nginx.key
+
+db_name: default
+db_user: default
+db_pass: default
+db_host: localhost

@@ -1,0 +1,4 @@
+nginx_includes:
+ - apps/drupal/drupal.conf
+ - apps/drupal/drupal_cron_update.conf
+ - apps/drupal/drupal_install.conf

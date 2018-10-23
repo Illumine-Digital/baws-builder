@@ -1,0 +1,2 @@
+- name: install grav
+  shell: /var/www/html/default/bin/grav install

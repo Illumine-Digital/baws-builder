@@ -1,0 +1,4 @@
+ses_user: none
+ses_pass: none
+ses_hostname: none
+monit_email: admin@localhost

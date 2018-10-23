@@ -1,0 +1,2 @@
+- name: rotate ebs
+  file: src=nginx dest=/etc/logrotate.d/nginx

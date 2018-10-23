@@ -1,0 +1,3 @@
+monit_dir: /etc/monit.d
+ssh_user: ec2-user
+mysql_cnf: /etc

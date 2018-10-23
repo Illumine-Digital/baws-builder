@@ -1,0 +1,8 @@
+#Root password gets set to a temporary password, so we jump through some hoops to set our own.
+
+- name: enable mysql boot
+  service: name=mysqld enabled=yes state=started
+
+- name: restart mysql
+  service: name=mysqld state=restarted
+

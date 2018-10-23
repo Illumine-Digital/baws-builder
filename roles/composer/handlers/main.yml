@@ -1,0 +1,25 @@
+- name: install composer
+  shell: /usr/bin/php /usr/local/bin/composer-setup.php --filename=composer
+  args:
+    chdir: /usr/local/bin
+
+- name: activate composer
+  file: path=/usr/local/bin/composer mode=a+x
+
+- name: create composer alias
+  copy: src=composer.sh dest=/etc/profile.d
+
+# Composer needs excessive memory, for some reason,
+# when running through ansible. The 1G it can burn up in memory
+# is more than some servers will have available.
+# So we create a swap file.
+- name: create composer swap
+  command: "{{item}}"
+  with_items:
+   - /bin/dd if=/dev/zero of=/var/swap.1 bs=1M count=1024
+   - /bin/chmod 600 /var/swap.1
+   - /sbin/mkswap /var/swap.1
+   - /sbin/swapon /var/swap.1
+
+- name: composer cleanup
+  file: path=/usr/local/bin/composer-setup.php state=absent

@@ -1,0 +1,28 @@
+--- #Sets up server from ansible pull.
+
+- name: setup server
+  hosts: "{{host_name | default ('localhost')}}"
+  remote_user: "{{ssh_user}}"
+  become: true
+  pre_tasks:
+  - include: setup.yml
+  roles:
+   - common
+   - codedeploy
+   - monit
+   - awslogs
+   - users
+   - vagrant
+   - nginx
+   - php-fpm
+   - composer
+   - memcached
+   - mysql
+   - ec2
+   - cloudwatch
+   - webtools
+   - drupal
+   - wp
+   - websites
+   - slack
+...

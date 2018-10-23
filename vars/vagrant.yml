@@ -1,0 +1,3 @@
+ssh_user: vagrant
+nginx_user: vagrant
+nginx_group: vagrant

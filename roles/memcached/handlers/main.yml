@@ -1,0 +1,5 @@
+- name: enable memcached boot
+  service: name=memcached enabled=yes
+
+- name: restart memcached
+  service: name=memcached state=restarted

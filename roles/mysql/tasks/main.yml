@@ -1,0 +1,117 @@
+#This is needed for ansible to perform MySQL functions.
+- name: installing mysql python
+  yum: name=MySQL-python state=present
+  tags:
+  - mysql
+  - dev
+  - live
+  - local
+
+
+- name: install mysql repo
+  yum:
+    name: https://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm
+    state: present
+  tags:
+  - mysql
+  - local
+  - dev
+  - live
+
+- name: install mysql client
+  yum:
+    name: mysql-community-client
+    state: present
+  tags:
+  - live
+  - dev
+
+- block:
+
+  # This process needs to be run by handles, since, if it's been run before
+  # we probably already have a root password and corresponding /home/root/.my.cnf which shouldn't be reset.
+  - name: install mysql
+    yum:
+      name: mysql-community-server
+      state: present
+    notify:
+    - restart mysql
+    - enable mysql boot
+
+  tags:
+  - mysql
+  - local
+  - vagrant
+
+# We need these to run before proceeding.
+- meta: flush_handlers
+
+- name: set local default
+  set_fact:
+    mysql_pass: default
+
+# Insecure settings since we only install mysql locally.
+- block:
+
+  - name: install my cnf
+    copy: src=my.cnf dest={{mysql_cnf}}
+
+  - name: turn off mysql grant checks
+    command: /bin/systemctl set-environment MYSQLD_OPTS="--skip-grant-tables"
+
+  - name: restart mysql
+    service:
+      name: mysqld
+      state: restarted
+
+  - name: reduce mysql password requirements
+    command: /bin/mysql -u root --execute="SET GLOBAL validate_password_length = 6; SET GLOBAL validate_password_number_count = 0; SET GLOBAL validate_password_special_char_count = 0; SET GLOBAL validate_password_mixed_case_count = 0;"
+
+  # We can't use the ansible name change when grant tables are disabled.
+  # So we query manually.
+  - name: change root password
+    command:  /bin/mysql -u root --execute="UPDATE mysql.user SET authentication_string = PASSWORD('{{mysql_root_password}}'), password_expired = 'N' WHERE User = 'root' AND Host = 'localhost';"
+
+  - name: sql query flush
+    command:  /bin/mysql -u root --execute="FLUSH PRIVILEGES"
+
+  - name: unset mysqld opts
+    command: /bin/systemctl unset-environment MYSQLD_OPTS
+
+  # finally, set the .my.cnf for it's easy to login.
+  - name: create root cnf
+    template: src=root.cnf.j2 dest=/root/.my.cnf mode=0600
+
+  - name: create mysql database
+    mysql_db:
+      login_user: "{{ mysql_root_user }}"
+      name: "{{mysql_db}}"
+
+  - name: create mysql user
+    mysql_user:
+      login_user: "{{ mysql_root_user }}"
+      login_password: "{{ mysql_root_password }}"
+      name: "{{mysql_user}}"
+      password: "{{mysql_pass}}"
+      priv: '{{mysql_db}}.*:ALL'
+
+  tags:
+   - mysql
+   - local
+   - vagrant
+
+- name: import mysql database
+  mysql_db:
+    login_user: root
+    login_password: "{{local_mysql_root}}"
+    name: "{{mysql_db}}"
+    state: import
+    target: "{{mysql_import_dir}}/{{mysql_import_file}}"
+  ignore_errors: yes
+  tags:
+   - mysql_import
+   - local_db_import
+   - wp_import
+
+
+

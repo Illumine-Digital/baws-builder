@@ -1,0 +1,40 @@
+<?php
+/**
+ * All directives are explained in documentation in the doc/ folder
+ * or at <https://docs.phpmyadmin.net/>.
+ *
+ * @package PhpMyAdmin
+ */
+
+/**
+ * This is needed for cookie based authentication to encrypt password in
+ * cookie. Needs to be 32 chars long.
+ */
+$cfg['blowfish_secret'] = '"{{ lookup('password', '/tmp/pmasalt chars=ascii_letters length=32') }}"';
+/* YOU MUST FILL IN THIS FOR COOKIE AUTH! */
+
+/**
+ * Servers configuration
+ */
+
+{% for host in hosts %}
+
+/* Authentication type */
+$cfg['Servers'][{{loop.index}}]['auth_type'] = 'cookie';
+
+$cfg['Servers'][{{ loop.index}}]['host'] = '{{host}}';
+$cfg['Servers'][{{ loop.index}}]['connect_type'] = 'tcp';
+$cfg['Servers'][{{ loop.index}}]['compress'] = false;
+$cfg['Servers'][{{ loop.index}}]['AllowNoPassword'] = false;
+
+
+{% endfor %}
+
+
+/**
+ * Directories for saving/loading files from server
+ */
+
+$cfg['UploadDir'] = '{{pma_upload}}';
+$cfg['SaveDir'] = '{{pma_save}}';
+

@@ -1,0 +1,5 @@
+- name: install npm grunt
+  npm: name=grunt state=present global=yes
+
+- name: install npm bower
+  npm: name=bower state=present global=yes

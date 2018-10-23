@@ -1,0 +1,33 @@
+---
+- block:
+
+  - name: create burrisx group
+    group: name=burrisx state=present
+
+  - name: create burrisx user
+    user: name=burrisx group=burrisx
+
+  - name: add ssh_user to burrisx
+    user: name={{ ssh_user }} group=burrisx
+
+  - name: add burrisx as a sudoer
+    become: true
+    lineinfile:
+      dest: /etc/sudoers
+      state: present
+      regexp: '^burrisx'
+      line: 'burrisx  ALL = NOPASSWD: ALL'
+
+  - name: remove tty requirement for burrisx
+    become: true
+    lineinfile:
+      dest: /etc/sudoers
+      state: present
+      regexp: '^Defaults:burrisx'
+      line: 'Defaults:burrisx !requiretty'
+
+  tags:
+   - dev
+   - live
+   - composer
+...

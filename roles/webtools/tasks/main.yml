@@ -1,0 +1,85 @@
+---
+
+- name: include webtools family
+  include: "{{ansible_os_family}}.yml"
+
+- name: install patch
+  yum: name=patch state=present
+  tags:
+  - dev
+
+- name: install npm
+  yum: name=npm state=present enablerepo=epel
+  notify:
+  - install npm grunt
+  - install npm bower
+  tags:
+  - dev
+  - npm
+
+#Install Webmin
+- block:
+  - name: install webmin
+    copy: src=webmin.repo dest=/etc/yum.repos.d/webmin.repo
+
+  - name: import jcameron key
+    rpm_key: key=http://www.webmin.com/jcameron-key.asc state=present
+
+  - name: install webmin yum
+    yum: name=webmin state=present
+
+  tags:
+  - webmin
+
+#PMA Block
+- block:
+
+  - name: phpmyadmin folder
+    file: path=/opt owner={{ ssh_user }} state=directory
+
+  - name: setup phpmyadmin
+    become_user: "{{ ssh_user }}"
+    shell: /usr/bin/php -c /etc/php-composer.ini /usr/local/bin/composer create-project phpmyadmin/phpmyadmin --repository-url=https://www.phpmyadmin.net/packages.json --no-dev  --no-ansi --no-interaction --no-progress
+    notify:
+     - symlink pma
+     - restart nginx
+    args:
+      chdir: /opt
+      creates: /opt/phpmyadmin/index.php
+
+  - name: setup pma dirs
+    file: path={{item}} state=directory owner=nginx group=nginx
+    with_items:
+     - /var/www/pmadump
+     - /var/www/pmasave
+
+  - name: create pma config
+    template: src=pma.conf.j2 dest=/opt/phpmyadmin/config.inc.php
+    vars:
+     hosts: "{{pma_hosts}}"
+    when: pma_hosts is defined
+
+  tags:
+   - webtools
+   - pma
+   - local
+
+#Opcache block
+- block:
+
+  - name: crudely check for opcache
+    stat: path=/opt/opcache/index.php
+    register: opcache
+
+  - name: clear opcache directory
+    file: path=/opt/opcache state=absent
+    when: not opcache.stat.exists
+
+  - name: clone opcache
+    git: repo=https://github.com/wwwpro/OpCacheGUI.git dest=/opt/opcach
+    when: not opcache.stat.exists
+
+  tags:
+   - devtools
+   - opcache
+...

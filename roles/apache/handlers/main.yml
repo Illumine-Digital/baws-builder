@@ -1,0 +1,12 @@
+- name: enable apache boot
+  service: name=httpd enabled=yes state=started
+
+- name: symlink default dav
+  file:
+    src: "{{apache_dir}}/sites-available/default-dav.conf"
+    dest: "{{apache_dir}}/sites-enabled/default-dav.conf"
+    state: link
+  when: apache_default.stat.exists
+
+- name: restart apache
+  service: name=httpd state=restarted
