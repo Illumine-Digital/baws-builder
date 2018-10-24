@@ -76,8 +76,6 @@
   - name: sql query flush
     command:  /bin/mysql -u root --execute="FLUSH PRIVILEGES;"
 
-  - name: reduce mysql password requirements
-    command: /bin/mysql -u root --execute="uninstall plugin validate_password;"
 
   - name: unset mysqld opts
     command: /bin/systemctl unset-environment MYSQLD_OPTS
@@ -85,7 +83,10 @@
   - name: restart mysql
     service:
       name: mysqld
-      state: restartedOn
+      state: restarted
+
+  - name: reduce mysql password requirements
+    command: /bin/mysql -u root --execute="uninstall plugin validate_password;"
 
   # finally, set the .my.cnf for it's easy to login.
   - name: create local user cnf
