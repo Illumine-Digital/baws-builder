@@ -55,7 +55,7 @@
 
   - name: set default password
     set_fact:
-      mysql_pass: default
+      mysql_pass: default_pass
 
   - name: install my cnf
     copy: src=my.cnf dest={{mysql_cnf}}
@@ -76,8 +76,6 @@
   - name: sql query flush
     command:  /bin/mysql -u root --execute="FLUSH PRIVILEGES;"
 
-  - name: reduce mysql password requirements
-    command: /bin/mysql -u root --execute="SET GLOBAL validate_password_length = 6; SET GLOBAL validate_password_number_count = 0; SET GLOBAL validate_password_special_char_count = 0; SET GLOBAL validate_password_mixed_case_count = 0;"
 
   - name: unset mysqld opts
     command: /bin/systemctl unset-environment MYSQLD_OPTS
