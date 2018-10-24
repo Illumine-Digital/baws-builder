@@ -22,7 +22,6 @@
     creates: /etc/nginx/nginx.conf
   notify:
   - enable nginx boot
-  - monitor nginx
   - restart nginx
   tags:
   - dev
