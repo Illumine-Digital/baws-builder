@@ -9,7 +9,6 @@
   roles:
    - common
    - codedeploy
-   - monit
    - awslogs
    - users
    - vagrant
@@ -24,5 +23,6 @@
    - drupal
    - wp
    - websites
+   - monit
    - slack
 ...
