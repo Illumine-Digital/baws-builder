@@ -85,7 +85,7 @@
       state: restarted
 
   # finally, set the .my.cnf for it's easy to login.
-  - name: create root cnf
+  - name: create local user cnf
     template: src=root.cnf.j2 dest=/{{ ssh_user }}/.my.cnf mode=0600
     vars:
       mycnf_user: "{{ mysql_user }}"
@@ -97,7 +97,7 @@
     template: src=root.cnf.j2 dest=/root/.my.cnf mode=0600
     vars:
       mycnf_user: "{{ mysql_root_user }}"
-      mycnf_pass: "{{ mysql_root_pass }}"
+      mycnf_pass: "{{ mysql_root_password }}"
 
   - name: create mysql database
     mysql_db:
