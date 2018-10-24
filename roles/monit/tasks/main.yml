@@ -5,7 +5,14 @@
   set_fact:
     monitor: false
   tags:
-  - nomonit
+   - nomonit
+
+- name: set monit email
+  set_fact:
+    monit_email: "{{ user_email }}"
+  when: user_email is defined
+  tags:
+    - always
 
 - block:
 
@@ -28,6 +35,7 @@
     template: src=mail.cfg.j2 dest=/etc/monit.d/mail.cfg
     when:
     - ses_user != none
+    - monit_email is defined
 
   tags:
   - always
