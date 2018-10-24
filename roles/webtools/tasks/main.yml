@@ -1,8 +1,5 @@
 ---
 
-- name: include webtools family
-  include: "{{ansible_os_family}}.yml"
-
 - name: install patch
   yum: name=patch state=present
   tags:
