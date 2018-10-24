@@ -53,6 +53,10 @@
 # Insecure settings for local mysql
 - block:
 
+  - name: set default password
+    set_fact:
+      mysql_pass: default
+
   - name: install my cnf
     copy: src=my.cnf dest={{mysql_cnf}}
 
@@ -107,6 +111,9 @@
       name: "{{mysql_user}}"
       password: "{{mysql_pass}}"
       priv: '{{mysql_db}}.*:ALL'
+
+
+
 
   tags:
    - local
