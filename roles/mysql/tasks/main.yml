@@ -64,13 +64,13 @@
       name: mysqld
       state: restarted
 
-  - name: reduce mysql password requirements
-    command: /bin/mysql -u root --execute="SET GLOBAL validate_password_length = 6; SET GLOBAL validate_password_number_count = 0; SET GLOBAL validate_password_special_char_count = 0; SET GLOBAL validate_password_mixed_case_count = 0;"
+  #- name: reduce mysql password requirements
+  #  command: /bin/mysql -u root --execute="SET GLOBAL validate_password_length = 6; SET GLOBAL validate_password_number_count = 0; SET GLOBAL validate_password_special_char_count = 0; SET GLOBAL validate_password_mixed_case_count = 0;"
 
   # We can't use the ansible name change when grant tables are disabled.
   # So we query manually.
-  #- name: change root password
-  #  command:  /bin/mysql -u root --execute="UPDATE mysql.user SET authentication_string = PASSWORD('{{mysql_root_password}}'), password_expired = 'N' WHERE User = 'root' AND Host = 'localhost';"
+  - name: change root password
+    command:  /bin/mysql -u root --execute="UPDATE mysql.user SET authentication_string = PASSWORD('{{mysql_root_password}}'), password_expired = 'N' WHERE User = 'root' AND Host = 'localhost';"
 
   - name: sql query flush
     command:  /bin/mysql -u root --execute="FLUSH PRIVILEGES"
