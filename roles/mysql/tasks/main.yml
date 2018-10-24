@@ -33,7 +33,7 @@
   - name: install mysql
     yum:
       name: mysql-community-server
-      state: present
+      state: installed
     notify:
     - restart mysql
     - enable mysql boot
@@ -50,7 +50,7 @@
   set_fact:
     mysql_pass: default
 
-# Insecure settings since we only install mysql locally.
+# Insecure settings for local mysql
 - block:
 
   - name: install my cnf
@@ -64,9 +64,6 @@
       name: mysqld
       state: restarted
 
-  #- name: reduce mysql password requirements
-  #  command: /bin/mysql -u root --execute="SET GLOBAL validate_password_length = 6; SET GLOBAL validate_password_number_count = 0; SET GLOBAL validate_password_special_char_count = 0; SET GLOBAL validate_password_mixed_case_count = 0;"
-
   # We can't use the ansible name change when grant tables are disabled.
   # So we query manually.
   - name: change root password
@@ -78,9 +75,25 @@
   - name: unset mysqld opts
     command: /bin/systemctl unset-environment MYSQLD_OPTS
 
+  - name: restart mysql
+    service:
+      name: mysqld
+      state: restarted
+
+  # finally, set the .my.cnf for it's easy to login.
+  - name: create root cnf
+    template: src=root.cnf.j2 dest=/{{ ssh_user }}/.my.cnf mode=0600
+    vars:
+      mycnf_user: "{{ mysql_user }}"
+      mycnf_pass: "{{ mysql_pass }}"
+
+
   # finally, set the .my.cnf for it's easy to login.
   - name: create root cnf
     template: src=root.cnf.j2 dest=/root/.my.cnf mode=0600
+    vars:
+      mycnf_user: "{{ mysql_root_user }}"
+      mycnf_pass: "{{ mysql_root_pass }}"
 
   - name: create mysql database
     mysql_db:
@@ -96,7 +109,6 @@
       priv: '{{mysql_db}}.*:ALL'
 
   tags:
-   - mysql
    - local
    - vagrant
 
