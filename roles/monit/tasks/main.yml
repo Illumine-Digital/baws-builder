@@ -60,8 +60,4 @@
   tags:
     - memcached
 
-- name: monitor solr
-  copy: src=solr.cfg dest={{monit_dir}}/solr.cfg
-  tags:
-    - solr
 ...
