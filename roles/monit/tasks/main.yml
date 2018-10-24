@@ -40,7 +40,7 @@
   tags:
   - always
   when:
-  - monitor is defined
+  - monitor != false
 
 
 - block:

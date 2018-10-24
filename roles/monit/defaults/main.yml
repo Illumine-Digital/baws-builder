@@ -1,3 +1,4 @@
+monitor: true
 ses_user: none
 ses_pass: none
 ses_hostname: none
