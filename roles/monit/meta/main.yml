@@ -1,4 +1,9 @@
 ---
 dependencies:
- - { role: ec2 }
+- { role: ec2 }
+- { role: nginx }
+- { role: php-fpm }
+- { role: solr }
+- { role: memcached }
+
 ...

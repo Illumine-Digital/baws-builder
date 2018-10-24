@@ -1,20 +1,59 @@
 ---
+
+# We want to monitor unless explicitly stated otherwise.
+- name: undo monit
+  set_fact:
+    monitor: false
+  tags:
+  - nomonit
+
 - block:
 
   - name: install monit
-    yum: name=monit state=present
+    yum: name=monit state=installed
     notify:
-    - activate monit host
     - enable monit boot
     - restart monit
 
   - name: set alert file
     template: src=alert.cfg.j2 dest=/etc/monit.d/alert.cfg
 
+  - name: activate monit host
+    copy: src=host.cfg dest={{monit_dir}}/host.cfg
+    when:
+    - user_name is defined
+    - user_pass is defined
+
   - name: set email config
     template: src=mail.cfg.j2 dest=/etc/monit.d/mail.cfg
-    when: ses_user != none
+    when:
+    - ses_user != none
 
   tags:
-  - monit
+  - always
+  when:
+  - monitor != false
+
+
+- block:
+
+  - name: monitor php-fpm
+    copy: src=php-fpm.cfg dest={{monit_dir}}/php-fpm.cfg
+
+  - name: monitor nginx
+    copy: src=nginx.cfg dest={{monit_dir}}/nginx.cfg
+
+  tags:
+    - dev
+    - live
+
+- name: monitor memcached
+  copy: src=memecached.cfg dest={{monit_dir}}/memcached.cfg
+  tags:
+    - memcached
+
+- name: monitor solr
+  copy: src=solr.cfg dest={{monit_dir}}/solr.cfg
+  tags:
+    - solr
 ...

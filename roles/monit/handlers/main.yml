@@ -1,18 +1,3 @@
-- name: activate monit host
-  copy: src=host.cfg dest={{monit_dir}}/host.cfg
-
-- name: monitor nginx
-  copy: src=nginx.cfg dest={{monit_dir}}/nginx.cfg
-
-- name: monitor php-fpm
-  copy: src=php-fpm.cfg dest={{monit_dir}}/php-fpm.cfg
-
-- name: monitor solr
-  copy: src=solr.cfg dest={{monit_dir}}/solr.cfg
-
-- name: monitor memcached
-  copy: src=memecached.cfg dest={{monit_dir}}/memcached.cfg
-
 - name: enable monit boot
   service: name=monit enabled=yes state=started
 

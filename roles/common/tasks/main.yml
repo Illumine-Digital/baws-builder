@@ -46,10 +46,6 @@
 # This is used for password protect dev sites, for instance, where the password prompt is delivered by the web server.
 - block:
 
-  - name: install pip3
-    yum:
-      name: python3-pip
-      state: present
 
   - name: install python passlib
     pip: name=passlib state=present
@@ -61,15 +57,18 @@
     htpasswd: name={{user_name}} password={{user_pass}} path=/var/www/auth/.resources
 
   - name: create dbm file
-    shell: htdbm -cb /var/www/auth/.dbm "{{user_name}}" "{{user_pass}}"
+    shell: htdbm -cb /var/www/auth/.dbm "{{ user_name }}" "{{ user_pass }}"
     args:
       creates: /var/www/auth/.dbm
 
   - name: create root cnf
     template: src=resources.j2 dest=/root/.resources mode=0600
 
+  when:
+    - user_name is defined
+    - user_pass is defined
   tags:
-    - pass
+    - always
 
 - name: create website root
   file:

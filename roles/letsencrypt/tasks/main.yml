@@ -1,0 +1,68 @@
+
+#Get certbot and try to perform a DNS challenge
+- block:
+
+  - name: check for full chain file
+    stat:
+      path: /etc/letsencrypt/live/{{ site_domain }}/fullchain.pem
+    register: fullchain
+
+  - name: install certbot
+    yum:
+      name: certbot-dns-route53
+      state: installed
+      enablerepo: epel
+
+  - name: pause for domain ttl
+    pause:
+      seconds: "{{ ttl }}"
+    when: site_domain != '_' and fullchain.stat.exists == False
+
+  - name: get certbot ssls for domain
+    command: /usr/bin/certbot certonly -n --agree-tos --email {{ user_email }} --dns-route53 -d {{ site_domain }} -d '*.{{ site_domain }}'
+    creates: "/etc/letsencrypt/live/{{site_domain}}/fullchain.pem"
+    ignore_errors: yes
+    register: certbot
+    when:
+     - site_domain != '_'
+     - user_email is defined
+
+  tags:
+    - ssl
+
+
+#Update nginx if the above has not failed
+- block:
+
+  - name: check for full chain file
+    stat:
+      path: /etc/letsencrypt/live/{{ site_domain }}/fullchain.pem
+    register: fullchain
+
+  - name: check for privkey
+    stat:
+      path: /etc/letsencrypt/live/{{ site_domain }}/privkey.pem
+    register: privkey
+
+  - name: update nginx chain file
+    replace:
+      path: "/etc/nginx/sites-available/{{ site_name }}.conf"
+      regexp: '^\s*ssl_certificate\s.+$'
+      replace: "  ssl_certificate /etc/letsencrypt/live/{{ site_domain }}/fullchain.pem;"
+    when: fullchain is defined and fullchain.stat.exists == True
+
+  - name: update nginx privkey
+    replace:
+      path: "/etc/nginx/sites-available/{{ site_name }}.conf"
+      regexp: '^\s*ssl_certificate_key.+$'
+      replace: "  ssl_certificate_key /etc/letsencrypt/live/{{ site_domain }}/privkey.pem;"
+    when: privkey is defined and privkey.stat.exists == True
+
+  - name: restart nginx
+    service:
+      name: nginx
+      state: restarted
+    when: certbot is defined and certbot.changed
+
+  tags:
+    - ssl
