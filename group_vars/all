@@ -22,12 +22,6 @@ mysql_pass: "{{ lookup('password', '/tmp/mysql_pass chars=ascii_letters length=1
 mysql_import_dir: /vagrant
 mysql_import_file: mysql.sql.gz
 
-
-has_memcache: 0
-memcache_host: localhost
-memcache_port: 11211
-memcache_prefix: local_
-
 #Website variables.
 website_dir: "{{site_root}}/{{site_name}}"
 session_host: localhost

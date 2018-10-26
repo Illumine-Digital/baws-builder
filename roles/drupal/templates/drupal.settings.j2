@@ -4,7 +4,7 @@
 * Ansible Template
 **/
 
-
+{% if memcache_host is defined %}
 $conf['cache_backends'][] = 'sites/all/modules/memcache/memcache.inc';
 $conf['lock_inc'] = 'sites/all/modules/memcache/memcache-lock.inc';
 $conf['memcache_key_prefix'] = '{{memcache_prefix}}';
@@ -24,7 +24,7 @@ $conf['memcache_bins'] = array(
   'cache' => 'default',
   'cache_form' => 'database'
 );
-
+{% endif %}
 
 
  /**

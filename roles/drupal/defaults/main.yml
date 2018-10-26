@@ -1,2 +1,4 @@
 trusted_domains: []
 level: dev
+
+memcache_port: 11211

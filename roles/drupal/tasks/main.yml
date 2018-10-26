@@ -31,63 +31,69 @@
     - dev
 
 
-- name: create settings directory for drupal 8
-  file:
-    path: "{{ site_root }}/{{site_name}}/sites/default/"
-    state: directory
-    mode: 0775
-    owner: ec2-user
-    group: burrisx
-  tags:
-  - drupal7
+#Drupal 7 install
+- block:
 
-- name: setting drupal settings according to import
-  template: src=drupal.settings.j2 dest={{ site_root }}/{{site_name}}/sites/default/settings.php
-  vars:
-   drupal_db_name: "{{mysql_db}}"
-   drupal_db_user: "{{mysql_user}}"
-   drupal_db_pass: "{{mysql_pass}}"
-   drupal_db_host: "{{db_host}}"
-  tags:
-   - local_db_import
-   - drupal7
+  - name: create settings directory for drupal 7
+    file:
+      path: "{{ site_root }}/{{site_name}}/sites/default/"
+      state: directory
+      mode: 0775
+      owner: ec2-user
+      group: burrisx
 
-- name: create settings directory for drupal 8
-  file:
-    path: "{{ site_root }}/{{site_name}}/web/sites/default/"
-    state: directory
-    mode: 0775
-    owner: ec2-user
-    group: burrisx
+  - name: create drupal 7 settings
+    template: src=drupal.settings.j2 dest={{ site_root }}/{{site_name}}/sites/default/settings.php
+    vars:
+     drupal_db_name: "{{db_nmae}}"
+     drupal_db_user: "{{db_user}}"
+     drupal_db_pass: "{{db_pass}}"
+     drupal_db_host: "{{db_host}}"
+
+  - name: set drupal 7 files location
+    set_fact:
+      drupal_files: "{{server_root}}/sites/default/files"
+
+  tags:
+    - drupal7
+
+- block:
+
+  - name: create settings directory for drupal 8
+    file:
+      path: "{{ site_root }}/{{site_name}}/web/sites/default/"
+      state: directory
+      mode: 0775
+      owner: ec2-user
+      group: burrisx
+    tags:
+      - drupal8
+
+  - name: create drupal 8 settings
+    template: src=drupal8.settings.j2 dest={{ site_root }}/{{site_name}}/web/sites/default/settings.php
+    vars:
+     drupal_db_name: "{{db_name}}"
+     drupal_db_user: "{{db_user}}"
+     drupal_db_pass: "{{db_pass}}"
+     drupal_db_host: "{{db_host}}"
+
+  - name: set drupal 8 files location
+    set_fact:
+      drupal_files: "{{ site_root }}/{{site_name}}/web/sites/default/files"
+
   tags:
     - drupal8
-
-- name: create drupal 8 settings
-  template: src=drupal8.settings.j2 dest={{ site_root }}/{{site_name}}/web/sites/default/settings.php
-  vars:
-   drupal_db_name: "{{db_name}}"
-   drupal_db_user: "{{db_user}}"
-   drupal_db_pass: "{{db_pass}}"
-   drupal_db_host: "{{db_host}}"
-  tags:
-   - local_db_import
-   - drupal8
 
 - name: composer install
   become_user: "{{ssh_user}}"
   shell: composer install --no-interaction --prefer-dist
   args:
-    chdir: "/var/www/html/{{site_name}}"
-    creates: "/var/www/html/{{site_name}}/vendor"
+    chdir: "{{ site_root }}/{{ site_name }}"
+    creates: "/var/www/html/{{ site_name }}/vendor"
   tags:
    - composer_install
 
-- name: set drupal 7 files location
-  set_fact:
-    drupal_files: "{{server_root}}/sites/default/files"
-  tags:
-  - drupal7
-  - drupal8
+
 
 
 - block:

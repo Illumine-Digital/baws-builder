@@ -1,22 +1,15 @@
 ---
-
-- name: install memcached
-  command: /usr/bin/amazon-linux-extras install memcached1.5=latest -y
-
-  notify:
-  - enable memcached boot
-  - restart memcached
-  tags:
-  - memcached
-
 - block:
+
+  - name: install memcached
+    command: /usr/bin/amazon-linux-extras install memcached1.5=latest -y
+
+    notify:
+    - enable memcached boot
+    - restart memcached
 
   - name: start memcached
     service: name=memcached enabled=yes state=started
-
-  - name: set memcached fact
-    set_fact:
-      has_memcache: 0
 
   tags:
    - memcached

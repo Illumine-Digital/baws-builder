@@ -20,7 +20,7 @@
     - restart awslogs
 
 
-  when: "'amazon' in ansible_product_version"
+  when: ansible_ec2_placement_region is defined
   tags:
    - live
    - awslogs
