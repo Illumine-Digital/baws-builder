@@ -62,6 +62,23 @@
   - dev
   - live
 
+- block:
+
+  - name: install libmemcache
+    yum:
+      name: "{{ item }}"
+    with_items:
+      - libmemcached
+      - libmemcached-devel
+
+  - name: install memcached via pecl
+    command: printf "\n" | /usr/bin/pecl install memcached
+
+  tags:
+    - live
+    - dev
+
+
 # Pool settings for Drupal 8
 - block:
 
