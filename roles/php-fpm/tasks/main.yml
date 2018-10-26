@@ -72,7 +72,7 @@
       - libmemcached-devel
 
   - name: install memcached via pecl
-    command: printf "\n" | /usr/bin/pecl install memcached
+    command: /usr/bin/pecl install memcached
 
   tags:
     - live
