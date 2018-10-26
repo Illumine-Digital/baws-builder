@@ -45,7 +45,7 @@
   - name: create drupal 7 settings
     template: src=drupal.settings.j2 dest={{ site_root }}/{{site_name}}/sites/default/settings.php
     vars:
-     drupal_db_name: "{{db_nmae}}"
+     drupal_db_name: "{{db_name}}"
      drupal_db_user: "{{db_user}}"
      drupal_db_pass: "{{db_pass}}"
      drupal_db_host: "{{db_host}}"
