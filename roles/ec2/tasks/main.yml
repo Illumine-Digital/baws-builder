@@ -17,7 +17,7 @@
 
   when: efs_id is defined
   tags:
-   - efs
+   - always
 
 
 - name: provision and attach new web server ebs volume
