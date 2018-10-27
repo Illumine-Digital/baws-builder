@@ -112,6 +112,6 @@
       src: "{{efs_mount}}/{{site_name}}"
       dest: "{{drupal_files}}"
       state: link
-  when: drupal_files is defined
-  tags:
-  - efs
+  when:
+  - drupal_files is defined
+  - efs_id is defined
