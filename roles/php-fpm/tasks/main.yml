@@ -73,6 +73,7 @@
 
   - name: install memcached via pecl
     command: /usr/bin/pecl install memcached
+    when: php.changed
 
   tags:
     - live
