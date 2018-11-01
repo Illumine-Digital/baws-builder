@@ -11,6 +11,20 @@
    - burris_builder
    - drupal7
 
+- name: set memcache var
+  set_fact:
+    memcache_prefix: "{{ site_name}}dev_"
+  tags:
+    - dev
+
+- name: set memcache var
+  set_fact:
+    memcache_prefix: "{{ site_name }}live_"
+  tags:
+  - live
+
+#This version of Drush is only used for Drupal 7, so it needs its own tag.
+#For Drupal 8, Drush should be installed via composer
 - name: install drush
   get_url: url=https://github.com/drush-ops/drush/releases/download/8.1.16/drush.phar dest=/usr/bin/drush mode=ugo+x
   notify:
@@ -57,6 +71,7 @@
   tags:
     - drupal7
 
+#Drupal 8
 - block:
 
   - name: create settings directory for drupal 8
@@ -81,17 +96,17 @@
     set_fact:
       drupal_files: "{{ site_root }}/{{site_name}}/web/sites/default/files"
 
+  - name: running composer install
+    become_user: "{{ssh_user}}"
+    shell: composer install --no-interaction --prefer-dist
+    args:
+      chdir: "{{ site_root }}/{{ site_name }}"
+      creates: "/var/www/html/{{ site_name }}/vendor"
+
   tags:
     - drupal8
 
-- name: composer install
-  become_user: "{{ssh_user}}"
-  shell: composer install --no-interaction --prefer-dist
-  args:
-    chdir: "{{ site_root }}/{{ site_name }}"
-    creates: "/var/www/html/{{ site_name }}/vendor"
-  tags:
-   - composer_install
+
 
 
 
