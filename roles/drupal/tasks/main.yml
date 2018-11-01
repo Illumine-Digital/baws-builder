@@ -130,3 +130,5 @@
   when:
   - drupal_files is defined
   - efs_id is defined
+  tags:
+    - always

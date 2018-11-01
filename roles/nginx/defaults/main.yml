@@ -6,8 +6,6 @@ site_log_level: crit
 #Array of domain names to respond to
 server_domains: []
 
-drupal_files: "{{server_root}}/sites/default/files"
-
 drupal_level: drupal
 level: dev
 
