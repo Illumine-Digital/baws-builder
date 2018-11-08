@@ -32,6 +32,8 @@
 - name: pause because epel weirdness
   pause:
     seconds: 5
+  tags:
+    - always
 
 #- name: install epel
 #  yum:
