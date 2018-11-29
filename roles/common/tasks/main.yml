@@ -25,7 +25,7 @@
 
 
 - name: install aws linux epel
-  command: /usr/bin/amazon-linux-extras install nginx1.12=latest -y
+  command: /usr/bin/amazon-linux-extras install epel -y
   tags:
     - always
 
