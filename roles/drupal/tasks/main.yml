@@ -102,6 +102,7 @@
     args:
       chdir: "{{ site_root }}/{{ site_name }}"
       creates: "/var/www/html/{{ site_name }}/vendor"
+    ignore_errors: yes
 
   tags:
     - drupal8
