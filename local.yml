@@ -12,6 +12,7 @@
    - awslogs
    - users
    - vagrant
+   - letsencrypt
    - nginx
    - php-fpm
    - composer
@@ -24,6 +25,5 @@
    - wp
    - websites
    - monit
-   - letsencrypt
    - slack
 ...

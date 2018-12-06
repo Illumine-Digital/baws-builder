@@ -39,18 +39,16 @@
       path: /etc/letsencrypt/live/{{ site_domain }}/privkey.pem
     register: privkey
 
-  - name: update nginx chain file
-    replace:
-      path: "/etc/nginx/sites-available/{{ site_name }}.conf"
-      regexp: '^\s*ssl_certificate\s.+$'
-      replace: "  ssl_certificate /etc/letsencrypt/live/{{ site_domain }}/fullchain.pem;"
+  - name: update ssl full chain
+    set_fact:
+      nginx_ssl_dir: /etc/letsencrypt/live/{{ site_domain }}
+      ssl_cert: fullchain.pem
     when: fullchain is defined and fullchain.stat.exists == True
 
-  - name: update nginx privkey
-    replace:
-      path: "/etc/nginx/sites-available/{{ site_name }}.conf"
-      regexp: '^\s*ssl_certificate_key.+$'
-      replace: "  ssl_certificate_key /etc/letsencrypt/live/{{ site_domain }}/privkey.pem;"
+  - name: update ssl privkey
+    set_fact:
+      nginx_ssl_dir: /etc/letsencrypt/live/{{ site_domain }}
+      ssl_key: privkey.pem
     when: privkey is defined and privkey.stat.exists == True
 
   - name: restart nginx
