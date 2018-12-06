@@ -13,11 +13,6 @@
       state: installed
       enablerepo: epel
 
-  - name: pause for domain ttl
-    pause:
-      seconds: "{{ ttl }}"
-    when: site_domain != '_' and fullchain.stat.exists == False
-
   - name: get certbot ssls for domain
     command: /usr/bin/certbot certonly -n --agree-tos --email {{ user_email }} --dns-route53 -d {{ site_domain }} -d '*.{{ site_domain }}'
     creates: "/etc/letsencrypt/live/{{site_domain}}/fullchain.pem"
