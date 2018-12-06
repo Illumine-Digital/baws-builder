@@ -70,8 +70,7 @@
     type: A
     ttl: 300
   ignore_errors: yes
-  tags:
-   - route
+  when: route_record is defined
 
 #Passwords are disabled by default, which is good. But on local, we choose convenience.
 - name: allow passwords for local machines
