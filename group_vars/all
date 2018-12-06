@@ -27,7 +27,6 @@ website_dir: "{{site_root}}/{{site_name}}"
 session_host: localhost
 
 #nginx
-ssl_cert: nginx.crt
 ssl_key: nginx.key
 
 db_name: default
