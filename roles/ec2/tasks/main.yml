@@ -57,10 +57,11 @@
     region: "{{ansible_ec2_placement_region}}"
     tags:
       codedeploy: "{{codedeploy_tag}}"
+  when: codedeploy_tag is defined
   tags:
-   - codedeploy
+   - always
 
-- name: adjust route53 dev record
+- name: adjust route53 record
   route53:
     command: create
     overwrite: yes

@@ -3,6 +3,8 @@ site_enabled: /etc/nginx/sites-enabled
 site_log: /var/log/nginx
 site_log_level: crit
 
+sub_domain: www
+
 #Array of domain names to respond to
 server_domains: []
 
@@ -26,7 +28,7 @@ site_domains: []
 # - dev.example.com
 # - cdn.example.com
 
-primary_domain: "www.{{site_domain}}"
+primary_domain: "{{sub_domain}}.{{site_domain}}"
 
 nginx_redirect: true
 #Redirect extraneous domains back to the original domain.
