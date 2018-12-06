@@ -24,5 +24,6 @@
    - wp
    - websites
    - monit
+   - letsencrypt
    - slack
 ...
