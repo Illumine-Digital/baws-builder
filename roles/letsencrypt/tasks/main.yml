@@ -41,13 +41,13 @@
 
   - name: set ssl full chain
     set_fact:
-      nginx_ssl_dir: /etc/letsencrypt/live/{{ site_domain }}
+      ssl_dir: /etc/letsencrypt/live/{{ site_domain }}
       ssl_cert: fullchain.pem
     when: fullchain.stat.exists == True
 
   - name: set ssl privkey
     set_fact:
-      nginx_ssl_dir: /etc/letsencrypt/live/{{ site_domain }}
+      ssl_dir: /etc/letsencrypt/live/{{ site_domain }}
       ssl_key: privkey.pem
     when: privkey.stat.exists == True
 
