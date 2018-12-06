@@ -39,13 +39,13 @@
       path: /etc/letsencrypt/live/{{ site_domain }}/privkey.pem
     register: privkey
 
-  - name: update ssl full chain
+  - name: set ssl full chain
     set_fact:
       nginx_ssl_dir: /etc/letsencrypt/live/{{ site_domain }}
       ssl_cert: fullchain.pem
     when: fullchain.stat.exists == True
 
-  - name: update ssl privkey
+  - name: set ssl privkey
     set_fact:
       nginx_ssl_dir: /etc/letsencrypt/live/{{ site_domain }}
       ssl_key: privkey.pem
