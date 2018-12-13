@@ -6,6 +6,6 @@ wp_secure_auth_key: "{{ lookup('wp_secure_auth_key', '/tmp/wpauth chars=ascii_le
 wp_logged_in_key: "{{ lookup('wp_logged_in_key', '/tmp/wpauth chars=ascii_letters length=64') }}"
 wp_nonce_key: "{{ lookup('wp_nonce_key', '/tmp/wpauth chars=ascii_letters length=64') }}"
 wp_auth_salt: "{{ lookup('wp_auth_salt', '/tmp/wpauth chars=ascii_letters length=64') }}"
-wp_secure_auth_salt: "{{ lookup('wp_auth_salt', '/tmp/wpauth chars=ascii_letters length=64') }}"
+wp_secure_auth_salt: "{{ lookup('wp_secure_auth_salt', '/tmp/wpauth chars=ascii_letters length=64') }}"
 wp_logged_in_salt: "{{ lookup('wp_logged_in_salt', '/tmp/wpauth chars=ascii_letters length=64') }}"
 wp_nonce_salt: "{{ lookup('wp_nonce_salt', '/tmp/wpauth chars=ascii_letters length=64') }}"
