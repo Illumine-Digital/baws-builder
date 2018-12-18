@@ -1,6 +1,0 @@
- - name: install docker
-  yum: name=docker state=present
-  notify:
-   - enable docker boot
-  tags:
-   - docker
