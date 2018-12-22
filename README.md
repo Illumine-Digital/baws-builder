@@ -24,4 +24,4 @@ This project has replaced numerous, separate configuration projects since they a
 ##AWS Tools:
 
 #### AWS Logs
-Tags: aws_
+Tags: aws_logs, live

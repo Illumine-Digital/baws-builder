@@ -7,6 +7,12 @@ site_root: /var/www/html
 
 ssh_user: ec2-user
 
+# Describes the server role, such as dev, stage, or live
+# This variable is set according to dev, stage and live tags.
+level: dev
+
+cache_prefix: "{{ level }}"
+
 nginx_user: nginx
 nginx_group: nginx
 
@@ -33,3 +39,4 @@ db_name: default
 db_user: default
 db_pass: default
 db_host: localhost
+

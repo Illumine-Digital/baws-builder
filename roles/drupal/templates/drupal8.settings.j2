@@ -804,5 +804,5 @@ $config_directories['sync'] = '../config/sync';
 $settings['redis.connection']['interface'] = 'PhpRedis';
 $settings['redis.connection']['host'] = '{{redis_endpoint}}';
 $settings['cache']['default'] = 'cache.backend.redis';
-$settings['cache_prefix']['default'] = '{{level}}_';
+$settings['cache_prefix']['default'] = '{{site_name}}_{{level}}';
 {% endif %}

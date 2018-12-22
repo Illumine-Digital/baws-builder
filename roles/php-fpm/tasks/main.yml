@@ -72,7 +72,7 @@
       - libmemcached-devel
 
   - name: install memcached via pecl
-    command: /usr/bin/pecl install memcached
+    command: /usr/bin/pecl install memcached-3.0.4
     when: php.changed
 
   tags:
@@ -92,7 +92,7 @@
   - name: set string buffer
     lineinfile:
       dest: /etc/php.d/10-opcache.ini
-      regexp: '^oopcache.interned_strings_buffer'
+      regexp: '^opcache.interned_strings_buffer'
       line: 'opcache.interned_strings_buffer=16'
       state: present
 

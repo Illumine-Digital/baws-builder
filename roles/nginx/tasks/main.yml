@@ -80,7 +80,7 @@
 
 - name: set level to dev
   set_fact:
-    level: "dev"
+    level: "stage"
     drupal_level: "drupal"
   tags:
    - stage
