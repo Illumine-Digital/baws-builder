@@ -45,18 +45,15 @@
       nginx_ssl_dir: /etc/letsencrypt/live/{{ site_domain }}
       ssl_cert: fullchain.pem
     when: fullchain.stat.exists == True
+    notify: restart nginx
 
   - name: set ssl privkey
     set_fact:
       nginx_ssl_dir: /etc/letsencrypt/live/{{ site_domain }}
       ssl_key: privkey.pem
     when: privkey.stat.exists == True
+    notify: restart nginx
 
-  - name: restart nginx
-    service:
-      name: nginx
-      state: restarted
-    when: certbot is defined and certbot.changed
-
+  when: certbot is defined and certbot.changed
   tags:
     - ssl

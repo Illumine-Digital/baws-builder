@@ -8,12 +8,12 @@
   - include: setup.yml
   roles:
    - common
+   - letsencrypt
    - codedeploy
    - awslogs
    - users
    - vagrant
    - nginx
-   - letsencrypt
    - php-fpm
    - composer
    - memcached
