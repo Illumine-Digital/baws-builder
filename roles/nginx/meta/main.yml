@@ -1,5 +1,4 @@
 ---
 dependencies:
  - { role: logrotate }
- - { role: nginx }
 ...
