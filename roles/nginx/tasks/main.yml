@@ -8,6 +8,7 @@
     ssl_dir: /etc/nginx/ssl
     ssl_certificate: nginx.crt
     ssl_key: nginx.key
+  when: nginx_ssl_dir is not defined
 
 
 - name: switch pool to dev
