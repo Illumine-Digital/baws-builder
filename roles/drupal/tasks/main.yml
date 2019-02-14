@@ -107,7 +107,10 @@
   tags:
     - drupal8
 
-
+- name: set cache level
+  set_fact:
+    cache_level: "{{ level }}"
+  when: cache_level is not defined
 
 
 

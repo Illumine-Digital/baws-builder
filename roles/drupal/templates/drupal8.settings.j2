@@ -746,7 +746,7 @@ $settings['container_yamls'][] = $app_root . '/' . $site_path . '/services.yml';
  * will allow the site to run off of all variants of example.com and
  * example.org, with all subdomains included.
  */
- 
+
 {% if trusted_domains|length >= 1 %}
 $settings['trusted_host_patterns'] = array(
     {%for trusted in trusted_domains %}
@@ -804,5 +804,5 @@ $config_directories['sync'] = '../config/sync';
 $settings['redis.connection']['interface'] = 'PhpRedis';
 $settings['redis.connection']['host'] = '{{redis_endpoint}}';
 $settings['cache']['default'] = 'cache.backend.redis';
-$settings['cache_prefix']['default'] = '{{site_name}}_{{level}}';
+$settings['cache_prefix']['default'] = '{{site_name}}_{{cache_level}}';
 {% endif %}
