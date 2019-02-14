@@ -14,6 +14,7 @@
     state: present
   ignore_errors: yes
   tags:
+    - dev
     - mysql
     - local
     - vagrant
