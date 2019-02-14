@@ -7,36 +7,24 @@
   - live
   - local
 
-
-- name: install mysql repo
-  yum_repository:
-    name: mysql
-    description: MySQL 57 Repo
-    baseurl: https://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm
-  tags:
-  - mysql
-  - local
-  - dev
-  - live
-
-# This frequently causes "Failure taking to yum" errors which creates serious problems,
-# and it is not vital to have running; at least not enough to make everything else fail.
+# MariaDB works better for AWS Linux 2
 - name: install mysql client
   yum:
-    name: mysql-community-client
+    name: mariadb
     state: present
   ignore_errors: yes
   tags:
-  - live
-  - dev
+    - mysql
+    - local
+    - vagrant
 
 - block:
 
-  # This process needs to be run by handles, since, if it's been run before
+  # See above on MariaDB usage.
   # we probably already have a root password and corresponding /home/root/.my.cnf which shouldn't be reset.
   - name: install mysql
     yum:
-      name: mysql-community-server
+      name: mariadb-server
       state: installed
     notify:
     - restart mysql
