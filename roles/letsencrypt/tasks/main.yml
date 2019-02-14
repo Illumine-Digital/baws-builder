@@ -22,7 +22,6 @@
      - site_domain != '_'
      - user_email is defined
      - fullchain.stat.exists != True
-
   tags:
     - ssl
 
