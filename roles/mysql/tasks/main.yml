@@ -9,9 +9,10 @@
 
 
 - name: install mysql repo
-  yum:
-    name: https://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm
-    state: present
+  yum_repository:
+    name: mysql
+    description: MySQL 57 Repo
+    baseurl: https://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm
   tags:
   - mysql
   - local
