@@ -54,6 +54,6 @@
     when: privkey.stat.exists == True
     notify: restart nginx
 
-  when: certbot is defined and certbot.changed
+  when: certbot is defined
   tags:
     - ssl

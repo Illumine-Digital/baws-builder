@@ -12,8 +12,8 @@
    - awslogs
    - users
    - vagrant
-   - nginx
    - letsencrypt
+   - nginx
    - php-fpm
    - composer
    - memcached
