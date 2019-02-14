@@ -47,9 +47,6 @@ nginx_available: /etc/nginx/sites-available
 
 nginx_secure_redirect: true
 
-nginx_ssl_dir: /etc/nginx/ssl
-
-
 nginx_includes:
  - apps/global/cache-live.conf
  - apps/global/php-live.conf

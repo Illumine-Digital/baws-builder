@@ -40,3 +40,6 @@ db_user: default
 db_pass: default
 db_host: localhost
 
+nginx_ssl_dir: /etc/nginx/ssl
+ssl_key: nginx.key
+ssl_cert: nginx.crt
