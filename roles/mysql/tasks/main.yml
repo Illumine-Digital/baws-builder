@@ -18,10 +18,13 @@
   - dev
   - live
 
+# This frequently causes "Failure taking to yum" errors which creates serious problems,
+# and it is not vital to have running; at least not enough to make everything else fail.
 - name: install mysql client
   yum:
     name: mysql-community-client
     state: present
+  ignore_errors: yes
   tags:
   - live
   - dev
