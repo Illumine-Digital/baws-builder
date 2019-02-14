@@ -19,6 +19,12 @@
   - dev
   - live
 
+# Clean yo self.
+- name: yum-clean-metadata
+  command: yum clean metadata
+  args:
+    warn: no
+
 # This frequently causes "Failure taking to yum" errors which creates serious problems,
 # and it is not vital to have running; at least not enough to make everything else fail.
 - name: install mysql client
