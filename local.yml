@@ -13,4 +13,17 @@
    - users
    - vagrant
    - letsencrypt
+   - nginx
+   - php-fpm
+   - composer
+   - memcached
+   - mysql
+   - ec2
+   - cloudwatch
+   - webtools
+   - drupal
+   - wp
+   - websites
+   - monit
+   - slack
 ...
