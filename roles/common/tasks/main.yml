@@ -29,12 +29,6 @@
   tags:
     - always
 
-- name: pause because epel weirdness
-  pause:
-    seconds: 5
-  tags:
-    - always
-
 #- name: install epel
 #  yum:
 #    name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
