@@ -74,6 +74,12 @@
 #Drupal 8
 - block:
 
+  - name: increase php memory for Drupal 8
+    set_fact:
+      php_live_memory: 512M
+      php_stage_memory: 512M
+      php_dev_memory: 512M
+
   - name: create settings directory for drupal 8
     file:
       path: "{{ site_root }}/{{site_name}}/web/sites/default/"
