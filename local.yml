@@ -13,8 +13,6 @@
    - awslogs
    - users
    - vagrant
-   - nginx
-   - php-fpm
    - composer
    - memcached
    - mysql
@@ -24,6 +22,8 @@
    - drupal
    - wp
    - websites
+   - nginx
+   - php-fpm
    - monit
    - slack
 ...
