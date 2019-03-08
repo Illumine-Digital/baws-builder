@@ -9,11 +9,11 @@
   roles:
    - common
    - php-fpm
-   - composer
    - letsencrypt
    - codedeploy
    - awslogs
    - users
+   - composer
    - vagrant
    - memcached
    - mysql
