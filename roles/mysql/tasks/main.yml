@@ -20,7 +20,6 @@
     - vagrant
 
 - block:
-
   # See above on MariaDB usage.
   # we probably already have a root password and corresponding /home/root/.my.cnf which shouldn't be reset.
   - name: install mysql
