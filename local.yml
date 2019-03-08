@@ -9,6 +9,7 @@
   roles:
    - common
    - php-fpm
+   - composer
    - letsencrypt
    - codedeploy
    - awslogs
@@ -23,7 +24,6 @@
    - wp
    - websites
    - nginx
-   - composer
    - monit
    - slack
 ...
