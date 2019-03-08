@@ -59,27 +59,6 @@
       name: mariadb
       state: restarted
 
-  # We can't use the ansible name change when grant tables are disabled.
-  # So we query manually.
-  # Todo we have switched to maria. Are the same hacks needed?
-  - name: change root password
-    command:  /bin/mysql -u root --execute="UPDATE mysql.user SET authentication_string = PASSWORD('{{mysql_root_password}}'), password_expired = 'N' WHERE User = 'root' AND Host = 'localhost';"
-
-  - name: sql query flush
-    command:  /bin/mysql -u root --execute="FLUSH PRIVILEGES;"
-
-
-  - name: unset mysqld opts
-    command: /bin/systemctl unset-environment MYSQLD_OPTS
-
-  - name: restart mysql
-    service:
-      name: mariadb
-      state: restarted
-
-  - name: reduce mysql password requirements
-    command: /bin/mysql -u root --execute="uninstall plugin validate_password;"
-
   # set the .my.cnf for ssh user so it's easy to login.
   - name: create local user cnf
     template: src=root.cnf.j2 dest=/{{ ssh_user }}/.my.cnf mode=0600
