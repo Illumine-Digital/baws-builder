@@ -29,13 +29,6 @@
   tags:
     - always
 
-#- name: install epel
-#  yum:
-#    name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-#    state: present
-#  tags:
-#  - always
-
 #Includes htpasswd, which other services may use, even without apache.
 - name: install apache tools
   yum:
