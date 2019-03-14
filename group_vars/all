@@ -22,8 +22,8 @@ slack_channel: aws
 vim_background: dark
 
 #Used to create dbs when MySQL is installed locally
-mysql_db: default
-mysql_user: default
+mysql_db: vagrant
+mysql_user: vagrant
 mysql_pass: "{{ lookup('password', '/tmp/mysql_pass chars=ascii_letters length=16') }}"
 mysql_import_dir: /vagrant
 mysql_import_file: mysql.sql.gz

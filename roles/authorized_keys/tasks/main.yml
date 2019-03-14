@@ -1,0 +1,22 @@
+- block:
+
+  - name: create developers
+    user:
+      name: "{{ item }}"
+      shell: /bin/bash
+      groups: ec2-user
+      append: yes
+    loop: "{{ authorized_github }}"
+    when: authorized_github is defined
+    tags:
+      - always
+
+  - name: install github authorized keys
+    authorized_key:
+      user: "{{ item }}"
+      state: present
+      key: http://github.com/{{ item }}.keys
+      validate_certs: false
+    loop: "{{ authorized_github }}"
+    tags:
+      - always

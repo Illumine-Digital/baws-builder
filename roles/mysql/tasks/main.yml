@@ -40,16 +40,13 @@
 
 - name: set local default
   set_fact:
-    mysql_pass: default
+    mysql_pass: vagrant
 
 # Insecure settings for local mysql
 - block:
   - name: set default password
     set_fact:
       mysql_pass: default_pass
-
-  - name: install my cnf
-    copy: src=my.cnf dest={{mysql_cnf}}
 
   - name: turn off mysql grant checks
     command: /bin/systemctl set-environment MYSQLD_OPTS="--skip-grant-tables"
