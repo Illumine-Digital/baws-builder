@@ -127,7 +127,7 @@
 
   - name: symlink files folder
     file:
-      src: "{{efs_mount}}/{{site_name}}"
+      src: "{{efs_mount}}/{{efs_name}}"
       dest: "{{drupal_files}}"
       state: link
   when:

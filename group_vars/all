@@ -2,8 +2,10 @@ host_name: localhost
 
 salt: "{{ lookup('salt', '/tmp/rando chars=ascii_letters length=16') }}"
 
-site_name: default
+site_name: www
 site_root: /var/www/html
+
+efs_name: "{{ site_name }}"
 
 ssh_user: ec2-user
 
