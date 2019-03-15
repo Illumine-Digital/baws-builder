@@ -6,7 +6,7 @@
       shell: /bin/bash
       groups: ec2-user
       append: yes
-    loop: "{{ authorized_github }}"
+    with_items: "{{ authorized_github }}"
     when: authorized_github is defined
     tags:
       - always
