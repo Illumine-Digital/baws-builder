@@ -50,6 +50,21 @@
    - ebs
    - appdrive
 
+- name: get me tags
+  local_action:
+    module: ec2_tag
+    region: "{{ ansible_ec2_placement_region }}"
+    resource: "{{ ansible_ec2_instance_id }}"
+    state: list
+  register: ec2_tags
+  ignore_errors: yes
+  tags:
+    - always
+
+- name: set my name for echoing purposes
+  set_fact:
+    my_name: "{{ ec2_tags.tags.Name }}"
+  when: ec2_tags is defined
 
 - name: tag codedeploy server
   ec2_tag:

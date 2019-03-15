@@ -1,3 +1,4 @@
+my_name: nameless
 ebs_gb: 20
 ebs_type: gp2
 ebs_name: /dev/sdf
