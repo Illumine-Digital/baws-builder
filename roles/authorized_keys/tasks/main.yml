@@ -2,11 +2,10 @@
 
   - name: create developers
     user:
-      name: "{{ item }}"
+      name: developer
       shell: /bin/bash
       groups: ec2-user
       append: yes
-    with_items: "{{ authorized_github }}"
     when: authorized_github is defined
     tags:
       - always
