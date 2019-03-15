@@ -65,6 +65,8 @@
   set_fact:
     my_name: "{{ ec2_tags.tags.Name }}"
   when: ec2_tags is defined
+  tags:
+    - always
 
 - name: tag codedeploy server
   ec2_tag:
