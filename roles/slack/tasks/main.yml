@@ -3,10 +3,9 @@
     token: "{{slack_token}}"
     msg: "
     Your instance is done! \n
-    Name: {{ my_name }}
+    Name: {{ my_name }} \n
     IP: {{ ansible_ec2_public_ipv4 }} \n
-    Instance ID: {{ ansible_ec2_instance_id }}"
-    Public DNS: {{ansible_ec2_public_hostname}}"
+    Instance ID: {{ ansible_ec2_instance_id }} \n"
   when: slack_token != 'none' and ansible_ec2_public_hostname is defined
   tags:
    - always
