@@ -17,6 +17,6 @@
       state: present
       key: http://github.com/{{ item }}.keys
       validate_certs: false
-    loop: "{{ authorized_github }}"
+    with_items: "{{ authorized_github }}"
     tags:
       - always
