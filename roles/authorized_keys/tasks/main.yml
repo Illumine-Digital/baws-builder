@@ -12,7 +12,7 @@
 
   - name: install github authorized keys
     authorized_key:
-      user: "{{ item }}"
+      user: "developer"
       state: present
       key: http://github.com/{{ item }}.keys
       validate_certs: false
