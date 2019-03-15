@@ -5,9 +5,7 @@
     Your instance is done! \n
     Name: {{ my_name }}
     IP: {{ ansible_ec2_public_ipv4 }} \n
-    Instance ID: {{ ansible_ec2_instance_id }}
-
-    "
+    Instance ID: {{ ansible_ec2_instance_id }}"
     Public DNS: {{ansible_ec2_public_hostname}}"
   when: slack_token != 'none' and ansible_ec2_public_hostname is defined
   tags:
