@@ -8,6 +8,7 @@
   - include: setup.yml
   roles:
    - common
+   - authorized_keys
    - php-fpm
    - letsencrypt
    - codedeploy
