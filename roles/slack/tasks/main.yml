@@ -1,6 +1,6 @@
 - name: send slack notification
   slack:
-    token: "{{slack_token}}"
+    token: "{{ slack_token }}"
     msg: "
     Your instance is done! \n
     Name: {{ my_name }} \n
