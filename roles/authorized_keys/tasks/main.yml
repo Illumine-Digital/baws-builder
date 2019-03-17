@@ -17,5 +17,6 @@
       key: http://github.com/{{ item }}.keys
       validate_certs: false
     with_items: "{{ authorized_github }}"
+    when: authorized_github is defined
     tags:
       - always
