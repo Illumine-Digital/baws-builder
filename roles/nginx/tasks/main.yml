@@ -182,6 +182,13 @@
    - dev
    - opcache
 
+- name: symlink pma
+  file:
+   src: "{{site_available}}/pma.conf"
+   dest: "{{site_enabled}}/pma.conf"
+   state: link
+  tags:
+    - pma
 
 - name: setup nginx for vagrant
   lineinfile:
