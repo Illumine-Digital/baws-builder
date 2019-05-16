@@ -50,14 +50,14 @@
 
   - name: create settings directory for drupal 7
     file:
-      path: "{{ site_root }}/{{site_name}}/sites/default/"
+      path: "{{server_root}}/sites/default/"
       state: directory
       mode: 0775
       owner: ec2-user
       group: burrisx
 
   - name: create drupal 7 settings
-    template: src=drupal.settings.j2 dest={{ site_root }}/{{site_name}}/sites/default/settings.php
+    template: src=drupal.settings.j2 dest={{server_root}}/sites/default/settings.php
     vars:
      drupal_db_name: "{{db_name}}"
      drupal_db_user: "{{db_user}}"
@@ -82,7 +82,7 @@
 
   - name: create settings directory for drupal 8
     file:
-      path: "{{ site_root }}/{{site_name}}/web/sites/default/"
+      path: "{{server_root}}/sites/default/"
       state: directory
       mode: 0775
       owner: ec2-user
@@ -91,7 +91,7 @@
       - drupal8
 
   - name: create drupal 8 settings
-    template: src=drupal8.settings.j2 dest={{ site_root }}/{{site_name}}/web/sites/default/settings.php
+    template: src=drupal8.settings.j2 dest={{server_root}}/sites/default/settings.php
     vars:
      drupal_db_name: "{{db_name}}"
      drupal_db_user: "{{db_user}}"
@@ -100,7 +100,7 @@
 
   - name: set drupal 8 files location
     set_fact:
-      drupal_files: "{{ site_root }}/{{site_name}}/web/sites/default/files"
+      drupal_files: "{{server_root}}/sites/default/files"
 
   - name: running composer install
     become_user: "{{ssh_user}}"
