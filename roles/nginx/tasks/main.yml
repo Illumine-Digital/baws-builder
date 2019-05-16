@@ -76,6 +76,7 @@
     server_root: "{{website_dir}}/web"
   tags:
    - drupal8
+   - webroot
 
 - name: set drupal to dev
   set_fact:
