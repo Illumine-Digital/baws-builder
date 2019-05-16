@@ -56,7 +56,7 @@
     - live
 
 - name: monitor memcached
-  copy: src=memecached.cfg dest={{monit_dir}}/memcached.cfg
+  copy: src=memcached.cfg dest={{monit_dir}}/memcached.cfg
   tags:
     - memcached
 
