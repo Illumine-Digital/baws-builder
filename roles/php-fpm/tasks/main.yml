@@ -1,7 +1,7 @@
 ---
 
 - name: install core php
-  command: /usr/bin/amazon-linux-extras install php7.2=latest -y
+  command: /usr/bin/amazon-linux-extras install php7.4=latest -y
   args:
     creates: /etc/php.ini
   tags:

@@ -16,7 +16,7 @@
 
 
 - name: install nginx extra
-  command: /usr/bin/amazon-linux-extras install nginx1.12=latest -y
+  command: /usr/bin/amazon-linux-extras install nginx1=latest -y
   args:
     creates: /etc/nginx/nginx.conf
   notify:
