@@ -12,7 +12,14 @@
         bucket: {{ deploy_bucket }}
         object: ssl-bundle.crt
         dest: /var/www/ssl
-        mode:
+        mode: get
+
+    - name: set ssl location
+      set_fact:
+        nginx_ssl_dir: /var/www/ssl
+        ssl_key: private.key
+        ssl_cert: ssl-bundle.crt
+      notify: restart nginx
 
     tags:
       -ssl
