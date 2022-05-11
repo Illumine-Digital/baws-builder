@@ -1,6 +1,6 @@
 upload_max: 100M
 post_max: "{{ upload_max }}"
-php_version: 7.2
+php_version: 7.4
 pool_user: nginx
 pool_group: nginx
 php_save_handler: files

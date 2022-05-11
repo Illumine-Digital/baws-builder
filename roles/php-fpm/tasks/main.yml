@@ -16,7 +16,7 @@
   - dev
   - live
 
-# These libraries don't designate PHP 7.2 in the repo, but seem to install and work just fine.
+# These libraries don't designate PHP 7.4 in the repo, but seem to install and work just fine.
 - name: install php packages
   yum: name={{ item }} state=installed
   with_items:
