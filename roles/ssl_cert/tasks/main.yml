@@ -1,14 +1,14 @@
 - block:
   - name: install private key
     aws_s3:
-      bucket: {{ deploy_bucket }}
+      bucket: "{{ deploy_bucket }}"
       object: private.key
       dest: /var/www/ssl
       mode: get
 
   - name: install ssl certificate
     aws_s3:
-      bucket: {{ deploy_bucket }}
+      bucket: "{{ deploy_bucket }}"
       object: ssl-bundle.crt
       dest: /var/www/ssl
       mode: get
