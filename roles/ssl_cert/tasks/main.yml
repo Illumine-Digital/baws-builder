@@ -23,4 +23,4 @@
   tags:
     - ssl
 
-  when: certbot is not defined
+  when: fullchain.stat.exists == False
