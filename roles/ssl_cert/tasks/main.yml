@@ -1,27 +1,26 @@
 - block:
+  - name: install private key
+    aws_s3:
+      bucket: {{ deploy_bucket }}
+      object: private.key
+      dest: /var/www/ssl
+      mode: get
 
-    - name: install private key
-      aws_s3:
-        bucket: {{ deploy_bucket }}
-        object: private.key
-        dest: /var/www/ssl
-        mode: get
+  - name: install ssl certificate
+    aws_s3:
+      bucket: {{ deploy_bucket }}
+      object: ssl-bundle.crt
+      dest: /var/www/ssl
+      mode: get
 
-    - name: install ssl certificate
-      aws_s3:
-        bucket: {{ deploy_bucket }}
-        object: ssl-bundle.crt
-        dest: /var/www/ssl
-        mode: get
+  - name: set ssl location
+    set_fact:
+      nginx_ssl_dir: /var/www/ssl
+      ssl_key: private.key
+      ssl_cert: ssl-bundle.crt
+    notify: restart nginx
 
-    - name: set ssl location
-      set_fact:
-        nginx_ssl_dir: /var/www/ssl
-        ssl_key: private.key
-        ssl_cert: ssl-bundle.crt
-      notify: restart nginx
+  tags:
+    - ssl
 
-    tags:
-      - ssl
-
-    when: certbot is not defined
+  when: certbot is not defined
