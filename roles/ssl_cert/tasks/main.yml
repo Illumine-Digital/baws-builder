@@ -3,14 +3,14 @@
     aws_s3:
       bucket: "{{ deploy_bucket }}"
       object: private.key
-      dest: /var/www/ssl
+      dest: /var/www/ssl/private.key
       mode: get
 
   - name: install ssl certificate
     aws_s3:
       bucket: "{{ deploy_bucket }}"
       object: ssl-bundle.crt
-      dest: /var/www/ssl
+      dest: /var/www/ssl/ssl-bundle.crt
       mode: get
 
   - name: set ssl location
