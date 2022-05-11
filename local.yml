@@ -11,6 +11,7 @@
    - authorized_keys
    - php-fpm
    - letsencrypt
+   - ssl_cert
    - codedeploy
    - awslogs
    - users
