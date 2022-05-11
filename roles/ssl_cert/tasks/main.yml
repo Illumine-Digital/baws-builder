@@ -22,6 +22,6 @@
       notify: restart nginx
 
     tags:
-      -ssl
+      - ssl
 
     when: certbot is not defined
